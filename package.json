@@ -12,8 +12,14 @@
     "type": "git",
     "url": "git@github.com:nefe/one-cron.git"
   },
-  "files": ["lib", "*.md"],
-  "keywords": ["cron", "react"],
+  "files": [
+    "lib",
+    "*.md"
+  ],
+  "keywords": [
+    "cron",
+    "react"
+  ],
   "author": "DT-NEFE",
   "license": "MIT",
   "devDependencies": {
@@ -23,7 +29,9 @@
     "@types/node": "^8.0.47",
     "@types/node-fetch": "^1.6.7",
     "@types/prettier": "^1.10.0",
-    "ts-node": "^3.3.0"
+    "ts-node": "^3.3.0",
+    "webpack": "^4.10.1",
+    "webpack-dev-server": "^3.1.4"
   },
   "dependencies": {}
 }
