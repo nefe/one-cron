@@ -1,0 +1,29 @@
+{
+  "name": "one-cron",
+  "version": "0.1.0",
+  "description": "",
+  "main": "lib/core.js",
+  "typings": "src/core.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:nefe/one-cron.git"
+  },
+  "files": ["lib", "*.md"],
+  "keywords": ["cron", "react"],
+  "author": "DT-NEFE",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/commander": "2.9.1",
+    "@types/fs-extra": "^5.0.0",
+    "@types/lodash": "^4.14.80",
+    "@types/node": "^8.0.47",
+    "@types/node-fetch": "^1.6.7",
+    "@types/prettier": "^1.10.0",
+    "ts-node": "^3.3.0"
+  },
+  "dependencies": {}
+}
