@@ -1,11 +1,4 @@
 export declare function isStrNum(str: string): void;
-export declare const TranslateMap: {
-    ["day"]: string;
-    ["week"]: string;
-    ["month"]: string;
-    ["hour"]: string;
-    ["minute"]: string;
-};
 export declare enum PeriodType {
     day = "day",
     week = "week",
@@ -13,6 +6,13 @@ export declare enum PeriodType {
     hour = "hour",
     minute = "minute",
 }
+export declare const TranslateMap: {
+    ["day"]: string;
+    ["week"]: string;
+    ["month"]: string;
+    ["hour"]: string;
+    ["minute"]: string;
+};
 export declare const hourItems: {
     text: string;
     value: string;

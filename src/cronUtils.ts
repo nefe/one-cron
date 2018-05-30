@@ -1,22 +1,10 @@
-import { PeriodType } from "./CronUtils";
 import * as Moment from "moment";
 import * as _ from "lodash";
-import { Select } from "antd";
 import * as React from "react";
 import { getArr } from "./utils";
 
-const Option = Select.Option;
-
 export function isStrNum(str: string) {
-  // return !Number.isNaN(Number(str));
-};
-
-export const TranslateMap = {
-  ["day"]: "日",
-  ["week"]: "周",
-  ["month"]: "月",
-  ["hour"]: "小时",
-  ["minute"]: "分钟"
+  return !Number.isNaN(Number(str));
 };
 
 export enum PeriodType {
@@ -27,13 +15,29 @@ export enum PeriodType {
   minute = "minute"
 }
 
+export const TranslateMap = {
+  ["day"]: "日",
+  ["week"]: "周",
+  ["month"]: "月",
+  ["hour"]: "小时",
+  ["minute"]: "分钟"
+};
+
+
+export const periodItems = Object.values(PeriodType).map(item => {
+  return {
+    text: TranslateMap[item],
+    value: item
+  };
+});
+
 export const hourItems = getArr(24).map(num => ({
   text: `${num}时`,
   value: String(num)
 }));
 
 export const dayItems = getArr(31, 1).map(num => ({
-  text: '${num}号',
+  text: `${num}号`,
   value: String(num)
 }));
 
@@ -63,191 +67,194 @@ export const stepItems = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55].map(
   }
 );
 
-// export class Cron {
-//   periodType: PeriodType;
+export type AllCron = DayCron | WeekCron | MonthCron | HourCron | MinuteCron;
 
-//   init(cron: any) {
-//     _.forEach(cron, (value, key) => {
-//       if (value !== 'periodType') {
-//         this[key] = value;
-//       }
-//     });
-//   }
+export class Cron {
+  periodType: PeriodType;
 
-//   static getCronFromPeriodType(periodType: PeriodType) {
-//     if (periodType === PeriodType.day) {
-//       return new DayCron({});
-//     } else if (periodType === PeriodType.week) {
-//       return new WeekCron({});
-//     } else if (periodType === PeriodType.month) {
-//       return new MonthCron({});
-//     } else if (periodType === PeriodType.hour) {
-//       return new HourCron({});
-//     } else if (periodType === PeriodType.minute) {
-//       return new MinuteCron({});
-//     } else if (periodType === PeriodType.hour) {
-//       return new HourCron({});
-//     }
-//   }
+  init(cron: any) {
+    _.forEach(cron, (value, key) => {
+      console.log(cron,value,key)
+      if (value !== 'periodType') {
+        this[key] = value;
+      }
+    });
+  }
 
-//   static getCronFromExp(cronExp: string) {
-//     if (!cronExp) {
-//       return new DayCron({});
-//     }
+  static getCronFromPeriodType(periodType: PeriodType) {
+    if (periodType === PeriodType.day) {
+      return new DayCron({});
+    } else if (periodType === PeriodType.week) {
+      return new WeekCron({});
+    } else if (periodType === PeriodType.month) {
+      return new MonthCron({});
+    } else if (periodType === PeriodType.hour) {
+      return new HourCron({});
+    } else if (periodType === PeriodType.minute) {
+      return new MinuteCron({});
+    } else if (periodType === PeriodType.hour) {
+      return new HourCron({});
+    }
+  }
 
-//     const [second, minute = '', hour = '', day, week, month] = cronExp.split(' ');
+  static getCronFromExp(cronExp: string) {
+    if (!cronExp) {
+      return new DayCron({});
+    }
 
-//     if (day === '*' && !minute.includes('/') && !hour.includes(',') && !hour.includes('/')) {
-//       return new DayCron({
-//         time: Moment(`${hour}:${minute}`, 'HH:mm'),
-//         isSchedule: hour !== '0' || minute !== '0'
-//       });
-//     } else if (day === '?') {
-//       return new WeekCron({
-//         time: Moment(`${hour}:${minute}`, 'HH:mm'),
-//         weeks: week.split(',')
-//       });
-//     } else if (day !== '*' && isStrNum(hour)) {
-//       return new MonthCron({
-//         days: day.split(','),
-//         time: Moment(`${hour}:${minute}`, 'HH:mm')
-//       });
-//     } else if (minute.includes('/')) {
-//       const [beginMinute, stepMinute] = minute.split('/');
-//       const [beginHour, endHour] = hour.split('-');
+    const [second, minute = '', hour = '', day, week, month] = cronExp.split(' ');
 
-//       return new MinuteCron({
-//         beginTime: Moment(`${beginHour}:${beginMinute}`, 'HH:mm'),
-//         endTime: Moment(`${endHour}:00`, 'HH:mm'),
-//         stepMinute
-//       });
-//     } else {
-//       if (hour.includes(',')) {
-//         // 时间点
-//         return new HourCron({
-//           hours: hour.split(',')
-//         });
-//       } else if (hour.includes('/')) {
-//         // 时间段
-//         const [duration, stepHour] = hour.split('/');
-//         const [beginHour, endHour] = hour.split('-');
+    if (day === '*' && !minute.includes('/') && !hour.includes(',') && !hour.includes('/')) {
+      return new DayCron({
+        time: Moment(`${hour}:${minute}`, 'HH:mm'),
+        isSchedule: hour !== '0' || minute !== '0'
+      });
+    } else if (day === '?') {
+      return new WeekCron({
+        time: Moment(`${hour}:${minute}`, 'HH:mm'),
+        weeks: week.split(',')
+      });
+    } else if (day !== '*' && isStrNum(hour)) {
+      return new MonthCron({
+        days: day.split(','),
+        time: Moment(`${hour}:${minute}`, 'HH:mm')
+      });
+    } else if (minute.includes('/')) {
+      const [beginMinute, stepMinute] = minute.split('/');
+      const [beginHour, endHour] = hour.split('-');
 
-//         return new HourCron({
-//           beginTime: Moment(`${beginHour}:${minute}`, 'HH:mm'),
-//           endTime: Moment(`${endHour}:00`, 'HH:mm'),
-//           stepHour
-//         });
-//       } else {
-//         return new HourCron({ hours: [] });
-//       }
-//     }
-//   }
-// }
+      return new MinuteCron({
+        beginTime: Moment(`${beginHour}:${beginMinute}`, 'HH:mm'),
+        endTime: Moment(`${endHour}:00`, 'HH:mm'),
+        stepMinute
+      });
+    } else {
+      if (hour.includes(',')) {
+        // 时间点
+        return new HourCron({
+          hours: hour.split(',')
+        });
+      } else if (hour.includes('/')) {
+        // 时间段
+        const [duration, stepHour] = hour.split('/');
+        const [beginHour, endHour] = hour.split('-');
 
-// export class DayCron extends Cron {
-//   readonly periodType = PeriodType.day;
+        return new HourCron({
+          beginTime: Moment(`${beginHour}:${minute}`, 'HH:mm'),
+          endTime: Moment(`${endHour}:00`, 'HH:mm'),
+          stepHour
+        });
+      } else {
+        return new HourCron({ hours: [] });
+      }
+    }
+  }
+}
 
-//   time = Moment('00:00', 'HH:mm');
-//   isSchedule = false;
+export class DayCron extends Cron {
+  readonly periodType = PeriodType.day;
 
-//   changeIsSchedule(isSchedule: boolean) {
-//     if (this.isSchedule && !isSchedule) {
-//       this.time = Moment('00:00', 'HH:mm');
-//     }
+  time = Moment('00:00', 'HH:mm');
+  isSchedule = false;
 
-//     this.isSchedule = isSchedule;
-//   }
+  changeIsSchedule(isSchedule: boolean) {
+    if (this.isSchedule && !isSchedule) {
+      this.time = Moment('00:00', 'HH:mm');
+    }
 
-//   format() {
-//     const time = this.time;
+    this.isSchedule = isSchedule;
+  }
 
-//     return `0 ${time.minutes()} ${time.hours()} * * ?`;
-//   }
+  format() {
+    const time = this.time;
 
-//   constructor(cron: Partial<DayCron>) {
-//     super();
-//     this.init(cron);
-//   }
-// }
+    return `0 ${time.minutes()} ${time.hours()} * * ?`;
+  }
 
-// class MonthCron extends Cron {
-//   readonly periodType = PeriodType.month;
+  constructor(cron: Partial<DayCron>) {
+    super();
+    this.init(cron);
+  }
+}
 
-//   days = [] as string[];
-//   time = Moment('00:00', 'HH:mm');
+class MonthCron extends Cron {
+  readonly periodType = PeriodType.month;
 
-//   format() {
-//     const { days, time } = this;
+  days = [] as string[];
+  time = Moment('00:00', 'HH:mm');
 
-//     return `0 ${time.minutes()} ${time.hours()} ${days.join(',')} * * ?`;
-//   }
+  format() {
+    const { days, time } = this;
 
-//   constructor(cron: Partial<MonthCron>) {
-//     super();
-//     this.init(cron);
-//   }
-// }
+    return `0 ${time.minutes()} ${time.hours()} ${days.join(',')} * * ?`;
+  }
 
-// class WeekCron extends Cron {
-//   readonly periodType = PeriodType.week;
+  constructor(cron: Partial<MonthCron>) {
+    super();
+    this.init(cron);
+  }
+}
 
-//   weeks = [] as string[];
-//   time = Moment('00:00', 'HH:mm');
+class WeekCron extends Cron {
+  readonly periodType = PeriodType.week;
 
-//   format() {
-//     const { weeks, time } = this;
+  weeks = [] as string[];
+  time = Moment('00:00', 'HH:mm');
 
-//     return `0 ${time.minutes()} ${time.hours()} ? ${weeks.join(',')} *`;
-//   }
+  format() {
+    const { weeks, time } = this;
 
-//   constructor(cron: Partial<WeekCron>) {
-//     super();
-//     this.init(cron);
-//   }
-// }
+    return `0 ${time.minutes()} ${time.hours()} ? ${weeks.join(',')} *`;
+  }
 
-// class HourCron extends Cron {
-//   readonly periodType = PeriodType.hour;
+  constructor(cron: Partial<WeekCron>) {
+    super();
+    this.init(cron);
+  }
+}
 
-//   /** 是否使用时间段 */
-//   hasInterval = false;
-//   hours? = [] as string[];
-//   beginTime? = Moment('00:00', 'HH:mm');
-//   endTime? = Moment('00:00', 'HH:mm');
-//   stepHour? = '1';
+class HourCron extends Cron {
+  readonly periodType = PeriodType.hour;
 
-//   format() {
-//     const { hasInterval, beginTime, endTime, hours, stepHour } = this;
+  /** 是否使用时间段 */
+  hasInterval = false;
+  hours? = [] as string[];
+  beginTime? = Moment('00:00', 'HH:mm');
+  endTime? = Moment('00:00', 'HH:mm');
+  stepHour? = '1';
 
-//     if (hasInterval) {
-//       return `0 ${beginTime.minutes()} ${beginTime.hours()}-${endTime.hours()}/${stepHour} * * ?`;
-//     } else {
-//       return `0 0 ${hours.join(',')} * * ?`;
-//     }
-//   }
+  format() {
+    const { hasInterval, beginTime, endTime, hours, stepHour } = this;
 
-//   constructor(cron: Partial<HourCron>) {
-//     super();
-//     this.init(cron);
-//   }
-// }
+    if (hasInterval) {
+      return `0 ${beginTime.minutes()} ${beginTime.hours()}-${endTime.hours()}/${stepHour} * * ?`;
+    } else {
+      return `0 0 ${hours.join(',')} * * ?`;
+    }
+  }
 
-// class MinuteCron extends Cron {
-//   readonly periodType = PeriodType.minute;
+  constructor(cron: Partial<HourCron>) {
+    super();
+    this.init(cron);
+  }
+}
 
-//   beginTime? = Moment('00:00', 'HH:mm');
-//   endTime? = Moment('00:00', 'HH:mm');
-//   stepMinute? = '1';
+class MinuteCron extends Cron {
+  readonly periodType = PeriodType.minute;
 
-//   format() {
-//     const { beginTime, endTime, stepMinute } = this;
+  beginTime? = Moment('00:00', 'HH:mm');
+  endTime? = Moment('00:00', 'HH:mm');
+  stepMinute? = '1';
 
-//     return `0 ${beginTime.minutes()}/${stepMinute} ${beginTime.hours()}-${endTime.hours()} * * ?`;
-//   }
+  format() {
+    const { beginTime, endTime, stepMinute } = this;
 
-//   constructor(cron: Partial<MinuteCron>) {
-//     super();
-//     this.init(cron);
-//   }
-// }
+    return `0 ${beginTime.minutes()}/${stepMinute} ${beginTime.hours()}-${endTime.hours()} * * ?`;
+  }
+
+  constructor(cron: Partial<MinuteCron>) {
+    super();
+    this.init(cron);
+  }
+}
 
