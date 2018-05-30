@@ -14,8 +14,12 @@ import {
   hourItems
 } from "./cronUtils";
 
-console.log(hourItems, weekItems);
 const Option = Select.Option;
+
+interface Item {
+  text:string;
+  value:string
+}
 
 function getOptions(items: Item[]) {
   return items.map(item => {
