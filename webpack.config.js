@@ -1,28 +1,28 @@
-var path = require("path");
-var webpack = require("webpack");
+const path = require('path');
 
 module.exports = {
-  context: __dirname,
-  debug: true,
-  devtool: "#inline-source-map",
-  entry: path.join(__dirname + "/src/index.tsx"),
-  output: "lib",
-  plugins: [new webpack.HotModuleReplacementPlugin()],
+  entry: ['./src/index'],
+  externals: {
+    react: 'react'
+  },
+  output: {
+    filename: 'index.js',
+    path: path.resolve(__dirname, 'lib'),
+    libraryTarget: 'umd'
+  },
   resolve: {
-    extensions: ["", ".js"]
+    extensions: ['.ts', '.tsx', '.js']
   },
-
-  stats: {
-    colors: true,
-    chunks: false
-  },
-
   module: {
     loaders: [
       {
         test: /\.tsx?$/,
-        loader: "ts-loader",
-        include: [__dirname, path.join(__dirname, "..", "index.ts")]
+        exclude: /node_modules/,
+        loaders: ['awesome-typescript-loader']
+      },
+      {
+        test: /\.css?$/,
+        loaders: ['style-loader', 'css-loader']
       }
     ]
   }
