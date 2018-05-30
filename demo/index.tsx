@@ -12,10 +12,13 @@ class App extends React.Component<any, State> {
   state: State = {
     
   };
+  handleChange (exp){
+    console.log(exp,exp.format())
+  }
   render() {
     return (
       <div style={{margin:50}}>
-       <OneCron/>
+       <OneCron onChange={exp => this.handleChange(exp)} cronExpression="0 0-5 14 * * ?"/>
         
       </div>
     );

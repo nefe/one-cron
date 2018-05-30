@@ -1,1 +1,15 @@
 @import '~antd/dist/antd.css';
+
+.schedule-page {
+    padding:15px;
+}
+
+.form-item {
+    margin-right: 20px;
+
+    
+  }
+.form-item  .form-item-title {
+    display: inline-block;
+    margin-right: 10px;
+  }
