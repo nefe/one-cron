@@ -21,15 +21,6 @@ export enum PeriodType {
   minute = "minute"
 }
 
-// export const TranslateMap = {
-//   ["day"]: "日",
-//   ["week"]: "周",
-//   ["month"]: "月",
-//   ["hour"]: "小时",
-//   ["minute"]: "分钟"
-// };
-
-
 export const periodItems = (lang: string) => Object.values(PeriodType).map(item => {
   const TranslateMap = getI18N(lang)['translateMap'];
   return {
@@ -47,8 +38,6 @@ export const dayItems = getArr(31, 1).map(num => ({
   text: `${num}`,
   value: String(num)
 }));
-
-
 
 export const weekItems = (lang: string) => {
   const weekItemsList = getI18N(lang)['weekItemsList'];
