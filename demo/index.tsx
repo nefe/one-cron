@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import OneCron from '../src';
+import OneCron from '../lib';
 import "./index.css";
 
 type State = {
