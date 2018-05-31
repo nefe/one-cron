@@ -16,7 +16,7 @@ class App extends React.Component<any, State> {
   render() {
     return (
       <div style={{margin:50}}>
-       <OneCron lang={0} onChange={exp => this.handleChange(exp)} cronExpression="0 0-5 14 * * ?"/>
+       <OneCron lang={1} onChange={exp => this.handleChange(exp)} cronExpression="0 0-5 14 * * ?"/>
       </div>
     );
   }

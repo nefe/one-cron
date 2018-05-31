@@ -60,6 +60,11 @@ export default class OneCron extends React.Component<
       isEmpty: !props.cronExpression
     };
   }
+  static defaultProps = {
+    cronExpression:'0 0 0 * * ?',
+    onChange:()=>{},
+    lang:0
+  }
   handleChangePeriodType(periodType: PeriodType) {
     this.setState(
       {
