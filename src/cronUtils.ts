@@ -3,9 +3,15 @@ import * as _ from "lodash";
 import * as React from "react";
 import { getArr } from "./utils";
 
+const I18NList = require('./I18N.json');
+
 export function isStrNum(str: string) {
   return !Number.isNaN(Number(str));
 };
+
+export function getI18N(lang: string) {
+  return I18NList[lang];
+}
 
 export enum PeriodType {
   day = "day",
@@ -15,16 +21,17 @@ export enum PeriodType {
   minute = "minute"
 }
 
-export const TranslateMap = {
-  ["day"]: "日",
-  ["week"]: "周",
-  ["month"]: "月",
-  ["hour"]: "小时",
-  ["minute"]: "分钟"
-};
+// export const TranslateMap = {
+//   ["day"]: "日",
+//   ["week"]: "周",
+//   ["month"]: "月",
+//   ["hour"]: "小时",
+//   ["minute"]: "分钟"
+// };
 
 
-export const periodItems = Object.values(PeriodType).map(item => {
+export const periodItems = (lang: string) => Object.values(PeriodType).map(item => {
+  const TranslateMap = getI18N(lang)['translateMap'];
   return {
     text: TranslateMap[item],
     value: item
@@ -32,34 +39,30 @@ export const periodItems = Object.values(PeriodType).map(item => {
 });
 
 export const hourItems = getArr(24).map(num => ({
-  text: `${num}时`,
+  text: `${num}`,
   value: String(num)
 }));
 
 export const dayItems = getArr(31, 1).map(num => ({
-  text: `${num}号`,
+  text: `${num}`,
   value: String(num)
 }));
 
-export const weekItems = [
-  "周一",
-  "周二",
-  "周三",
-  "周四",
-  "周五",
-  "周六",
-  "周日"
-].map((day, dayIndex) => {
-  return {
-    text: day,
-    value: dayIndex + ""
-  };
-});
+
+
+export const weekItems = (lang: string) => {
+  const weekItemsList = getI18N(lang)['weekItemsList'];
+  return weekItemsList.map((day, dayIndex) => {
+    return {
+      text: day,
+      value: dayIndex + ""
+    };
+  });
+};
 
 export const stepItems = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55].map(
   num => {
     const str = String(num + 100).slice(1);
-
     return {
       text: str,
       value: str
@@ -74,7 +77,6 @@ export class Cron {
 
   init(cron: any) {
     _.forEach(cron, (value, key) => {
-      console.log(cron,value,key)
       if (value !== 'periodType') {
         this[key] = value;
       }
@@ -218,10 +220,10 @@ class HourCron extends Cron {
 
   /** 是否使用时间段 */
   hasInterval = false;
-  hours? = [] as string[];
-  beginTime? = Moment('00:00', 'HH:mm');
-  endTime? = Moment('00:00', 'HH:mm');
-  stepHour? = '1';
+  hours?= [] as string[];
+  beginTime?= Moment('00:00', 'HH:mm');
+  endTime?= Moment('00:00', 'HH:mm');
+  stepHour?= '1';
 
   format() {
     const { hasInterval, beginTime, endTime, hours, stepHour } = this;
@@ -242,9 +244,9 @@ class HourCron extends Cron {
 class MinuteCron extends Cron {
   readonly periodType = PeriodType.minute;
 
-  beginTime? = Moment('00:00', 'HH:mm');
-  endTime? = Moment('00:00', 'HH:mm');
-  stepMinute? = '1';
+  beginTime?= Moment('00:00', 'HH:mm');
+  endTime?= Moment('00:00', 'HH:mm');
+  stepMinute?= '1';
 
   format() {
     const { beginTime, endTime, stepMinute } = this;

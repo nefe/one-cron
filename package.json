@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "description": "",
   "main": "lib/index.js",
-  "types": "lib/src/index.d.ts",
   "scripts": {
     "build": "webpack --define process.env.NODE_ENV=\"'production'\"",
     "build:dist": "webpack -p --output-path=\"./dist\"",

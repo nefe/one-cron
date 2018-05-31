@@ -11,7 +11,8 @@ import {
   weekItems,
   dayItems,
   stepItems,
-  hourItems
+  hourItems,
+  getI18N
 } from "./cronUtils";
 
 const Option = Select.Option;
@@ -31,9 +32,14 @@ function getOptions(items: Item[]) {
   });
 }
 
+enum I18NEnum{
+  Chinese,
+  English
+}
 export class OneCronProps {
   cronExpression: string;
   onChange?: (cron: AllCron) => any;
+  lang?:number
 }
 interface OneCronState {
   cron: AllCron;
@@ -73,6 +79,8 @@ export default class OneCron extends React.Component<
 
   renderDetail() {
     const { cron } = this.state;
+    const { lang } = this.props,sLang = I18NEnum[lang];
+    const I18N = getI18N(sLang);
     const getCommonProps = <T extends any, Key extends keyof T>(cronBO: T, key: Key) => {
       return {
         value: cronBO[key],
@@ -96,7 +104,7 @@ export default class OneCron extends React.Component<
         return (
           <span>
             <Select mode="tags" style={{ width: 200 }} {...getCommonProps(cron, 'weeks')}>
-              {getOptions(weekItems)}
+              {getOptions(weekItems(sLang))}
             </Select>
             <TimePicker format="HH:mm" {...getCommonProps(cron, 'time')} />
           </span>
@@ -118,15 +126,15 @@ export default class OneCron extends React.Component<
         return (
           <span>
             <span className="form-item">
-              <span className="form-item-title">开始</span>
+              <span className="form-item-title">{I18N.start}</span>
               <TimePicker format="HH:mm" {...getCommonProps(cron, 'beginTime')} />
             </span>
             <span className="form-item">
-              <span className="form-item-title">间隔</span>
+              <span className="form-item-title">{I18N.step}</span>
               <Select {...getCommonProps(cron, 'stepMinute')}>{getOptions(stepItems)}</Select>
             </span>
             <span className="form-item">
-              <span className="form-item-title">结束</span>
+              <span className="form-item-title">{I18N.end}</span>
               <TimePicker format="HH:mm" {...getCommonProps(cron, 'endTime')} />
             </span>
           </span>
@@ -142,21 +150,21 @@ export default class OneCron extends React.Component<
                 cron.hasInterval = e.target.value === 'step';
                 this.triggerChange();
               }}>
-              <Radio value="step">时间段</Radio>
-              <Radio value="point">时间点</Radio>
+              <Radio value="step">{I18N.period}</Radio>
+              <Radio value="point">{I18N.point}</Radio>
             </RadioGroup>
             {cron.hasInterval ? (
               <span>
                 <span className="form-item">
-                  <span className="form-item-title">开始</span>
+                  <span className="form-item-title">{I18N.start}</span>
                   <TimePicker format="HH:mm" {...getCommonProps(cron, 'beginTime')} />
                 </span>
                 <span className="form-item">
-                  <span className="form-item-title">间隔</span>
+                  <span className="form-item-title">{I18N.step}</span>
                   <Select {...getCommonProps(cron, 'stepHour')}>{getOptions(stepItems)}</Select>
                 </span>
                 <span className="form-item">
-                  <span className="form-item-title">结束</span>
+                  <span className="form-item-title">{I18N.end}</span>
                   <TimePicker format="HH:mm" {...getCommonProps(cron, 'endTime')} />
                 </span>
               </span>
@@ -164,6 +172,7 @@ export default class OneCron extends React.Component<
               <Select
                 mode="tags"
                 value={cron.hours}
+                style={{width:50}}
                 onChange={(value: string[]) => {
                   cron.hours = value;
                   this.triggerChange();
@@ -182,7 +191,9 @@ export default class OneCron extends React.Component<
   }
 
   render() {
-    const { cronExpression, onChange } = this.props;
+    const { cronExpression, onChange,lang } = this.props;
+    const sLang = I18NEnum[lang];
+    const I18N = getI18N(sLang);
     const { cron } = this.state;
     return (
       <span className="schedule-period">
@@ -190,7 +201,7 @@ export default class OneCron extends React.Component<
           value={cron.periodType}
           onChange={this.handleChangePeriodType.bind(this)}
         >
-          {getOptions(periodItems)}
+          {getOptions(periodItems(sLang))}
         </Select>
         <Checkbox
           onChange={e => {
@@ -200,7 +211,7 @@ export default class OneCron extends React.Component<
           disabled={cron.periodType !== PeriodType.day}
           checked={cron.periodType !== PeriodType.day ? true : cron.isSchedule}
         >
-          定时
+          {I18N.timing}
         </Checkbox>
         {this.renderDetail()}
       </span>
