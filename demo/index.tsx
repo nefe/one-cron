@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import OneCron from '../lib';
+import OneCron from '../src';
 import "./index.css";
 
 type State = {
@@ -17,7 +17,7 @@ class App extends React.Component<any, State> {
   render() {
     return (
       <div style={{margin:50}}>
-       <OneCron lang={1} onChange={exp => this.handleChange(exp)} cronExpression="0 0 12 * * ?"/>
+       <OneCron showCheckbox={true} lang={0} onChange={exp => this.handleChange(exp)} cronExpression="0 0 12 * * ?"/>
       </div>
     );
   }
