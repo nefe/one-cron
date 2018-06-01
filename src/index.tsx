@@ -79,8 +79,8 @@ export default class OneCron extends React.Component<
 
   renderDetail() {
     const { cron } = this.state;
-    const { lang } = this.props,
-      sLang = I18NEnum[lang];
+    const { lang } = this.props;
+    const sLang = I18NEnum[lang];
     const I18N = getI18N(sLang);
     const getCommonProps = <T extends any, Key extends keyof T>(
       cronBO: T,
@@ -97,10 +97,6 @@ export default class OneCron extends React.Component<
 
     switch (cron.periodType) {
       case PeriodType.day: {
-        if (!cron.isSchedule) {
-          return null;
-        }
-
         return <TimePicker format="HH:mm" {...getCommonProps(cron, "time")} />;
       }
 
@@ -198,7 +194,7 @@ export default class OneCron extends React.Component<
               <Select
                 mode="tags"
                 value={cron.hours}
-                style={{ width: 50 }}
+                style={{ width: 200 }}
                 onChange={(value: string[]) => {
                   cron.hours = value;
                   this.triggerChange();
@@ -230,16 +226,6 @@ export default class OneCron extends React.Component<
         >
           {getOptions(periodItems(sLang))}
         </Select>
-        <Checkbox
-          onChange={e => {
-            (cron as DayCron).changeIsSchedule(e.target.checked);
-            this.triggerChange();
-          }}
-          disabled={cron.periodType !== PeriodType.day}
-          checked={cron.periodType !== PeriodType.day ? true : cron.isSchedule}
-        >
-          {I18N.timing}
-        </Checkbox>
         {this.renderDetail()}
       </span>
     );
