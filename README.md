@@ -1,6 +1,6 @@
 # One-Cron
 
-一款以Cron Expressions为桥梁的周期调度组件，支持国际化等功能。
+一款以Cron Expressions为桥梁的定时调度组件，支持国际化等功能。
 
 ## Cron Expressions
 
