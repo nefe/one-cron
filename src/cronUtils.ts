@@ -97,8 +97,7 @@ export class Cron {
 
     if (day === '*' && !minute.includes('/') && !hour.includes(',') && !hour.includes('/')) {
       return new DayCron({
-        time: Moment(`${hour}:${minute}`, 'HH:mm'),
-        isSchedule: hour !== '0' || minute !== '0'
+        time: Moment(`${hour}:${minute}`, 'HH:mm')
       });
     } else if (day === '?') {
       return new WeekCron({
@@ -146,16 +145,7 @@ export class DayCron extends Cron {
   readonly periodType = PeriodType.day;
 
   time = Moment('00:00', 'HH:mm');
-  isSchedule = false;
-
-  changeIsSchedule(isSchedule: boolean) {
-    if (this.isSchedule && !isSchedule) {
-      this.time = Moment('00:00', 'HH:mm');
-    }
-
-    this.isSchedule = isSchedule;
-  }
-
+ 
   format() {
     const time = this.time;
 
