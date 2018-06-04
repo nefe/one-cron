@@ -4,7 +4,7 @@
   "description": "",
   "main": "lib/index.js",
   "scripts": {
-    "build": "webpack",
+    "build": "webpack --config ./webpack.config.js",
     "build:dist": "webpack -p --output-path=\"./dist\"",
     "prepublish": "npm run build",
     "start": "webpack-dev-server --config ./demo/webpack.config.js"
