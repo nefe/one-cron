@@ -223,11 +223,11 @@ class HourCron extends Cron {
   hours? = [] as string[];
   beginTime? = Moment("00:00", "HH:mm");
   endTime? = Moment("00:00", "HH:mm");
-  stepHour? = "1";
+  stepHour? = "05";
 
   format() {
     const { hasInterval, beginTime, endTime, hours, stepHour } = this;
-
+    
     if (hasInterval) {
       return `0 ${beginTime.minutes()} ${beginTime.hours()}-${endTime.hours()}/${stepHour} * * ?`;
     } else {
@@ -246,7 +246,7 @@ class MinuteCron extends Cron {
 
   beginTime? = Moment("00:00", "HH:mm");
   endTime? = Moment("00:00", "HH:mm");
-  stepMinute? = "1";
+  stepMinute? = "05";
 
   format() {
     const { beginTime, endTime, stepMinute } = this;
