@@ -36,9 +36,9 @@ module.exports = {
       amd: "react"
     },
     lodash: "lodash",
-    moment: "Moment",
+    moment: "moment",
     "react-dom": "ReactDOM",
-    antd: "Antd"
+    antd: "antd"
   },
   plugins: [
     new webpack.DefinePlugin({
