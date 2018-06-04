@@ -33,14 +33,14 @@ function getOptions(items: Item[]) {
 }
 
 export enum I18NEnum {
-  Chinese,
-  English
+  Chinese = "Chinese",
+  English = "English"
 }
 export class OneCronProps {
-  cronExpression = "0 0 0 * * ?";
-  onChange = (exp: AllCron) => {};
-  lang = I18NEnum.Chinese;
-  showCheckbox = false;
+  cronExpression? = "0 0 0 * * ?";
+  onChange? = (exp: AllCron) => {};
+  lang? = 'English';
+  showCheckbox? = false;
 }
 interface OneCronState {
   cron: AllCron;
