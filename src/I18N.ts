@@ -12,33 +12,34 @@ function getArr(length: number, beginNum = 0, arr = []): number[] {
   return getArr(length - 1, beginNum + 1, [...arr, beginNum]);
 }
 
+let I18NList = {
+  start: "开始",
+  end: "结束",
+  step: "间隔",
+  stepMinuteUnit: "分钟",
+  stepHourUnit: "小时",
+  hourUnit: "时",
+  period: "时间段",
+  point: "时间点",
+  timing: "定时",
+  translateMap: {
+    day: "日",
+    week: "周",
+    month: "月",
+    hour: "小时",
+    minute: "分钟"
+  },
+  weekItemsList: ["周一", "周二", "周三", "周四", "周五", "周六", "周日"],
+  dayItemsList: getArr(31, 1).map(num => `${num}日`)
+};
+
 /**
  * 得到一个I18N json
  * @param lang 语言
  */
-function getI18N(lang = "Chinese") {
-  let I18NList;
+function getI18N(lang = "Chinese"): typeof I18NList {
   if (lang === "Chinese") {
-    I18NList = {
-      start: "开始",
-      end: "结束",
-      step: "间隔",
-      stepMinuteUnit: "分钟",
-      stepHourUnit: "小时",
-      hourUnit: "时",
-      period: "时间段",
-      point: "时间点",
-      timing: "定时",
-      translateMap: {
-        day: "日",
-        week: "周",
-        month: "月",
-        hour: "小时",
-        minute: "分钟"
-      },
-      weekItemsList: ["周一", "周二", "周三", "周四", "周五", "周六", "周日"],
-      dayItemsList: getArr(31, 1).map(num => `${num}日`)
-    };
+    return I18NList;
   } else if (lang === "English") {
     I18NList = {
       start: "Start",
