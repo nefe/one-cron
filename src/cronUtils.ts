@@ -1,7 +1,7 @@
 import * as Moment from "moment";
 import * as _ from "lodash";
 import * as React from "react";
-import { getI18N,getArr } from "./I18N";
+import { getI18N, getArr } from "./I18N";
 
 export function isStrNum(str: string) {
   return !Number.isNaN(Number(str));
@@ -25,12 +25,13 @@ export const getPeriodItems = (lang: string) =>
     };
   });
 
-export const getHourItems = (lang: string)=>{
+export const getHourItems = (lang: string) => {
   const hourUnit = getI18N(lang).hourUnit;
   return getArr(24).map(num => ({
-  text: `${num}${hourUnit}`,
-  value: String(num)
-}));}
+    text: `${num}${hourUnit}`,
+    value: String(num)
+  }));
+};
 
 export const getDayItems = (lang: string) => {
   const dayItemsList = getI18N(lang).dayItemsList;
@@ -53,22 +54,32 @@ export const getWeekItems = (lang: string) => {
   });
 };
 
-export const getSteoHourItems = getArr(12,1).map(num=>{
+export const getSteoHourItems = getArr(12, 1).map(num => {
   return {
     text: num + "",
     value: num + ""
-  }
-})
+  };
+});
 
-export const getStepMinuteItems = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55].map(
-  num => {
-    const str = String(num + 100).slice(1);
-    return {
-      text: str,
-      value: str
-    };
-  }
-);
+export const getStepMinuteItems = [
+  5,
+  10,
+  15,
+  20,
+  25,
+  30,
+  35,
+  40,
+  45,
+  50,
+  55
+].map(num => {
+  const str = String(num + 100).slice(1);
+  return {
+    text: str,
+    value: str
+  };
+});
 
 export type AllCron = DayCron | WeekCron | MonthCron | HourCron | MinuteCron;
 
@@ -141,17 +152,19 @@ export class Cron {
       if (hour.includes(",")) {
         // 时间点
         return new HourCron({
-          hours: hour.split(",")
+          hours: hour.split(","),
+          hasInterval: false
         });
       } else if (hour.includes("/")) {
         // 时间段
         const [duration, stepHour] = hour.split("/");
         const [beginHour, endHour] = hour.split("-");
-
+        
         return new HourCron({
           beginTime: Moment(`${beginHour}:${minute}`, "HH:mm"),
           endTime: Moment(`${endHour}:00`, "HH:mm"),
-          stepHour
+          stepHour,
+          hasInterval: true // 有时间段，默认为true
         });
       } else {
         return new HourCron({ hours: [] });
@@ -234,7 +247,7 @@ class HourCron extends Cron {
 
   format() {
     const { hasInterval, beginTime, endTime, hours, stepHour } = this;
-    
+
     if (hasInterval) {
       return `0 ${beginTime.minutes()} ${beginTime.hours()}-${endTime.hours()}/${stepHour} * * ?`;
     } else {
