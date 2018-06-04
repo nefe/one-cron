@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack --config ./webpack.config.js",
     "build:dist": "webpack -p --output-path=\"./dist\"",
-    "prepublish": "npm run build",
+    "prepublish": "npm run test && npm run build",
     "start": "webpack-dev-server --config ./demo/webpack.config.js",
     "test": "jest"
   },
