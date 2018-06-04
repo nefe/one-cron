@@ -23,8 +23,9 @@ function getI18N(lang = "Chinese") {
       start: "开始",
       end: "结束",
       step: "间隔",
-      stepUnit:'分钟',
-      hourUnit:'时',
+      stepMinuteUnit: "分钟",
+      stepHourUnit: "小时",
+      hourUnit: "时",
       period: "时间段",
       point: "时间点",
       timing: "定时",
@@ -43,8 +44,9 @@ function getI18N(lang = "Chinese") {
       start: "Start",
       end: "End",
       step: "Interval",
-      stepUnit:'minute',
-      hourUnit:':00',
+      stepMinuteUnit: "minute",
+      stepHourUnit: "hour",
+      hourUnit: ":00",
       period: "Time period",
       point: "Time Point",
       timing: "Timed Dispatch",
@@ -73,4 +75,4 @@ function getI18N(lang = "Chinese") {
   }
   return I18NList;
 }
-export { getI18N,getArr };
+export { getI18N, getArr };
