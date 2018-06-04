@@ -1,13 +1,32 @@
 {
   "name": "one-cron",
-  "version": "0.1.4",
+  "version": "0.1.6",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
-    "build": "webpack --define process.env.NODE_ENV=\"'production'\"",
+    "build": "webpack",
     "build:dist": "webpack -p --output-path=\"./dist\"",
     "prepublish": "npm run build",
-    "start": "webpack-dev-server --config ./demo/webpack.config.js"
+    "start": "webpack-dev-server --config ./demo/webpack.config.js",
+    "test": "jest"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "transform": {
+      "^.+\\.(ts|tsx)$": "ts-jest"
+    },
+    "globals": {
+      "ts-jest": {
+        "tsConfigFile": "tsconfig.json"
+      }
+    },
+    "testMatch": [
+      "**/__tests__/*.+(ts|tsx|js)"
+    ]
   },
   "repository": {
     "type": "git",
@@ -38,6 +57,7 @@
     "jest-cli": "^23.1.0",
     "jest-config": "^23.1.0",
     "style-loader": "^0.16.1",
+    "ts-jest": "^22.4.6",
     "typescript": "^2.2.2",
     "webpack": "^2.4.1",
     "webpack-dev-server": "^2.4.2"
