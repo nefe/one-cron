@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Select, Checkbox, TimePicker, Radio } from "antd";
-import RadioGroup from "antd/lib/radio/group";
+
 import {
   Cron,
   AllCron,
@@ -15,6 +15,7 @@ import {
 } from "./cronUtils";
 import { getI18N } from "./I18N";
 const Option = Select.Option;
+const RadioGroup = Radio.Group;
 
 interface Item {
   text: string;
@@ -151,10 +152,13 @@ export default class OneCron extends React.Component<
             </span>
             <span className="form-item">
               <span className="form-item-title">{I18N.step}</span>
-              <Select style={{width:100}} {...getCommonProps(cron, "stepMinute")}>
+              <Select
+                style={{ width: 100 }}
+                {...getCommonProps(cron, "stepMinute")}
+              >
                 {getOptions(getStepMinuteItems)}
               </Select>
-              <span style={{marginRight:20}}>{I18N.stepMinuteUnit}</span>
+              <span style={{ marginRight: 20 }}>{I18N.stepMinuteUnit}</span>
             </span>
             <span className="form-item">
               <span className="form-item-title">{I18N.end}</span>
@@ -188,10 +192,13 @@ export default class OneCron extends React.Component<
                 </span>
                 <span className="form-item">
                   <span className="form-item-title">{I18N.step}</span>
-                  <Select style={{width:100}} {...getCommonProps(cron, "stepHour")}>
+                  <Select
+                    style={{ width: 100 }}
+                    {...getCommonProps(cron, "stepHour")}
+                  >
                     {getOptions(getSteoHourItems)}
                   </Select>
-                  <span style={{marginRight:20}}>{I18N.stepHourUnit}</span>
+                  <span style={{ marginRight: 20 }}>{I18N.stepHourUnit}</span>
                 </span>
                 <span className="form-item">
                   <span className="form-item-title">{I18N.end}</span>
@@ -248,7 +255,7 @@ export default class OneCron extends React.Component<
               cron.periodType !== PeriodType.day ? true : cron.isSchedule
             }
           >
-            {I18N.timing}
+            <span className="timing">{I18N.timing}</span>
           </Checkbox>
         )}
         {this.renderDetail()}

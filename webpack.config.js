@@ -18,6 +18,7 @@ module.exports = {
     loaders: [
       {
         test: /\.tsx?$/,
+        include: path.join(__dirname, "src"),
         exclude: /node_modules/,
         loaders: ["awesome-typescript-loader"]
       },
@@ -26,6 +27,18 @@ module.exports = {
         loaders: ["style-loader", "css-loader"]
       }
     ]
+  },
+  externals: {
+    react: {
+      root: "React",
+      commonjs2: "react",
+      commonjs: "react",
+      amd: "react"
+    },
+    lodash: "lodash",
+    moment: "Moment",
+    "react-dom": "ReactDOM",
+    antd: "Antd"
   },
   plugins: [
     new webpack.DefinePlugin({
