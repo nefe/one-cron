@@ -16,7 +16,7 @@ Expression | Means
 
 Name | Type | Default | Description
 --------- | -------------|  -------------| -------------
-lang | Number | 0 | 0表示Chinese,1表示English，暂时只支持中英文切换
+lang | String | 'Chinese' | 选项:'Chinese' or 'English'，暂时只支持中英文切换
 onChange | Function |  | 默认传来一个参数，为对象类型，提供format方法，可以拿到对应的cron expression
 cronExpression | String | '0 0 0 * * ?' | 通过cronExpression的规则显示初始值
 
