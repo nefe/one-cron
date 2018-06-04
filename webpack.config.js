@@ -1,29 +1,35 @@
-const path = require('path');
+const path = require("path");
+const webpack = require("webpack");
 
 module.exports = {
-  entry: ['./src/index'],
+  entry: ["./src/index"],
   externals: {
-    react: 'react'
+    react: "react"
   },
   output: {
-    filename: 'index.js',
-    path: path.resolve(__dirname, 'lib'),
-    libraryTarget: 'umd'
+    filename: "index.js",
+    path: path.resolve(__dirname, "lib"),
+    libraryTarget: "umd"
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js']
+    extensions: [".ts", ".tsx", ".js"]
   },
   module: {
     loaders: [
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
-        loaders: ['awesome-typescript-loader']
+        loaders: ["awesome-typescript-loader"]
       },
       {
         test: /\.css?$/,
-        loaders: ['style-loader', 'css-loader']
+        loaders: ["style-loader", "css-loader"]
       }
     ]
-  }
+  },
+  plugins: [
+    new webpack.DefinePlugin({
+      "process.env.NODE_ENV": JSON.stringify("production")
+    })
+  ]
 };

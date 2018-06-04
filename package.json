@@ -1,10 +1,10 @@
 {
   "name": "one-cron",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
-    "build": "webpack --define process.env.NODE_ENV=\"'production'\"",
+    "build": "webpack",
     "build:dist": "webpack -p --output-path=\"./dist\"",
     "prepublish": "npm run build",
     "start": "webpack-dev-server --config ./demo/webpack.config.js"
@@ -13,14 +13,8 @@
     "type": "git",
     "url": "git@github.com:nefe/one-cron.git"
   },
-  "files": [
-    "lib",
-    "*.md"
-  ],
-  "keywords": [
-    "cron",
-    "react"
-  ],
+  "files": ["lib", "*.md"],
+  "keywords": ["cron", "react"],
   "author": "DT-NEFE",
   "license": "MIT",
   "devDependencies": {
