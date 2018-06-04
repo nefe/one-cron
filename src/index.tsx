@@ -9,7 +9,8 @@ import {
   getPeriodItems,
   getWeekItems,
   getDayItems,
-  getStepItems,
+  getStepMinuteItems,
+  getSteoHourItems,
   getHourItems
 } from "./cronUtils";
 import { getI18N } from "./I18N";
@@ -151,9 +152,9 @@ export default class OneCron extends React.Component<
             <span className="form-item">
               <span className="form-item-title">{I18N.step}</span>
               <Select style={{width:100}} {...getCommonProps(cron, "stepMinute")}>
-                {getOptions(getStepItems)}
+                {getOptions(getStepMinuteItems)}
               </Select>
-              <span style={{marginRight:20}}>{I18N.stepUnit}</span>
+              <span style={{marginRight:20}}>{I18N.stepMinuteUnit}</span>
             </span>
             <span className="form-item">
               <span className="form-item-title">{I18N.end}</span>
@@ -188,9 +189,9 @@ export default class OneCron extends React.Component<
                 <span className="form-item">
                   <span className="form-item-title">{I18N.step}</span>
                   <Select style={{width:100}} {...getCommonProps(cron, "stepHour")}>
-                    {getOptions(getStepItems)}
+                    {getOptions(getSteoHourItems)}
                   </Select>
-                  <span style={{marginRight:20}}>{I18N.stepUnit}</span>
+                  <span style={{marginRight:20}}>{I18N.stepHourUnit}</span>
                 </span>
                 <span className="form-item">
                   <span className="form-item-title">{I18N.end}</span>

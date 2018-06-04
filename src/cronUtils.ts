@@ -53,7 +53,14 @@ export const getWeekItems = (lang: string) => {
   });
 };
 
-export const getStepItems = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55].map(
+export const getSteoHourItems = getArr(12,1).map(num=>{
+  return {
+    text: num + "",
+    value: num + ""
+  }
+})
+
+export const getStepMinuteItems = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55].map(
   num => {
     const str = String(num + 100).slice(1);
     return {
@@ -223,7 +230,7 @@ class HourCron extends Cron {
   hours? = [] as string[];
   beginTime? = Moment("00:00", "HH:mm");
   endTime? = Moment("00:00", "HH:mm");
-  stepHour? = "05";
+  stepHour? = "1";
 
   format() {
     const { hasInterval, beginTime, endTime, hours, stepHour } = this;
