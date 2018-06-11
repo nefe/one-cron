@@ -115,7 +115,7 @@ export class Cron {
       return new DayCron({});
     }
 
-    const [second, minute = "", hour = "", day, week, month] = cronExp.split(
+    const [second, minute = "", hour = "", day, month, week] = cronExp.split(
       " "
     );
 
@@ -135,6 +135,7 @@ export class Cron {
         weeks: week.split(",")
       });
     } else if (day !== "*" && isStrNum(hour)) {
+      // 每月多少号
       return new MonthCron({
         days: day.split(","),
         time: Moment(`${hour}:${minute}`, "HH:mm")
