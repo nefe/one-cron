@@ -255,7 +255,7 @@ export default class OneCron extends React.Component<
               cron.periodType !== PeriodType.day ? true : cron.isSchedule
             }
           >
-            {I18N.timing}
+            <span className="timing">{I18N.timing}</span>
           </Checkbox>
         )}
         {this.renderDetail()}
