@@ -2,9 +2,12 @@
 
 一款以Cron Expressions为桥梁的定时调度组件，支持国际化等功能。
 
+![image](https://travis-ci.com/nefe/one-cron.svg?branch=master)
+
 ## Cron Expressions
 
 下表简单介绍了一下Cron Expressions的语法，详情请看[官方介绍](https://docs.oracle.com/cd/E12058_01/doc/doc.1014/e12030/cron_expressions.htm)
+
 
 Expression | Means
 --------- | -------------

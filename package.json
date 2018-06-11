@@ -6,7 +6,27 @@
   "scripts": {
     "build": "webpack --config ./webpack.config.js",
     "build:dist": "webpack -p --output-path=\"./dist\"",
-    "start": "webpack-dev-server --config ./demo/webpack.config.js"
+    "prepublish": "npm run test && npm run build",
+    "start": "webpack-dev-server --config ./demo/webpack.config.js",
+    "test": "jest"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "transform": {
+      "^.+\\.(ts|tsx)$": "ts-jest"
+    },
+    "globals": {
+      "ts-jest": {
+        "tsConfigFile": "tsconfig.json"
+      }
+    },
+    "testMatch": [
+      "**/__tests__/*.+(ts|tsx|js)"
+    ]
   },
   "repository": {
     "type": "git",
@@ -23,16 +43,29 @@
   "author": "DT-NEFE",
   "license": "MIT",
   "devDependencies": {
+    "@types/enzyme": "^3.1.10",
+    "@types/enzyme-adapter-react-16": "^1.0.2",
+    "@types/jest": "^23.0.0",
     "@types/react": "~16.0.34",
     "@types/react-dom": "~16.0.3",
     "@types/webpack-env": "^1.13.0",
     "antd": "^3.6.1",
     "awesome-typescript-loader": "^3.1.2",
     "css-loader": "^0.28.0",
+    "enzyme": "^3.3.0",
+    "enzyme-adapter-react-16": "^1.1.1",
+    "jest": "^23.1.0",
+    "jest-cli": "^23.1.0",
+    "jest-config": "^23.1.0",
     "style-loader": "^0.16.1",
+    "ts-jest": "^22.4.6",
     "typescript": "^2.2.2",
     "webpack": "^2.4.1",
-    "webpack-dev-server": "^2.4.2"
+    "webpack-dev-server": "^2.4.2",
+    "lodash": "~4.17.4",
+    "moment": "^2.22.1",
+    "react": "~16.2.0",
+    "react-dom": "~16.2.0"
   },
   "peerDependencies": {
     "antd": "~3.1.3",
