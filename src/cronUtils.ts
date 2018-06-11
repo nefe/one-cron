@@ -159,7 +159,7 @@ export class Cron {
         // 时间段
         const [duration, stepHour] = hour.split("/");
         const [beginHour, endHour] = hour.split("-");
-        
+
         return new HourCron({
           beginTime: Moment(`${beginHour}:${minute}`, "HH:mm"),
           endTime: Moment(`${endHour}:00`, "HH:mm"),
@@ -226,7 +226,7 @@ class WeekCron extends Cron {
   format() {
     const { weeks, time } = this;
 
-    return `0 ${time.minutes()} ${time.hours()} ? ${weeks.join(",")} *`;
+    return `0 ${time.minutes()} ${time.hours()} ? * ${weeks.join(",")}`;
   }
 
   constructor(cron: Partial<WeekCron>) {
