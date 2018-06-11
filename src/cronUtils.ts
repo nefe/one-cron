@@ -49,7 +49,7 @@ export const getWeekItems = (lang: string) => {
   return weekItemsList.map((day, dayIndex) => {
     return {
       text: day,
-      value: dayIndex + ""
+      value: dayIndex + 1 + ""
     };
   });
 };

@@ -1,3 +1,8 @@
+0.1.10 / 2018-06-11
+==================
+
+* fix: fix week items
+
 # 0.1.9 / 2018-06-11
 
 - fix: fix week crontab expression
