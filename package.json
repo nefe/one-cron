@@ -1,8 +1,9 @@
 {
   "name": "one-cron",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "",
   "main": "lib/index.js",
+  "typings": "src/index.tsx",
   "scripts": {
     "build": "webpack --config ./webpack.config.js",
     "build:dist": "webpack -p --output-path=\"./dist\"",
@@ -33,6 +34,7 @@
     "url": "git@github.com:nefe/one-cron.git"
   },
   "files": [
+    "src",
     "lib",
     "*.md"
   ],
