@@ -39,7 +39,7 @@ export enum I18NEnum {
 export class OneCronProps {
   cronExpression? = "0 0 0 * * ?";
   onChange? = (exp: AllCron) => {};
-  lang? = 'English';
+  lang? = I18NEnum.English;
   showCheckbox? = false;
 }
 interface OneCronState {
