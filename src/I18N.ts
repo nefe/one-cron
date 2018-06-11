@@ -29,7 +29,7 @@ let I18NList = {
     hour: "小时",
     minute: "分钟"
   },
-  weekItemsList: ["周一", "周二", "周三", "周四", "周五", "周六", "周日"],
+  weekItemsList: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],
   dayItemsList: getArr(31, 1).map(num => `${num}日`)
 };
 
@@ -58,7 +58,7 @@ function getI18N(lang = "Chinese"): typeof I18NList {
         hour: "Hour",
         minute: "Minute"
       },
-      weekItemsList: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+      weekItemsList: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
       dayItemsList: getArr(31, 1).map(num => {
         let day;
         if (num === 1 || num === 21 || num === 31) {
