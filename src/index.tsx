@@ -255,8 +255,10 @@ export default class OneCron extends React.Component<
     const sLang = I18NEnum[lang];
     const I18N = getI18N(sLang);
     const { cron } = this.state;
+    const typeCx = cron.periodType;
+
     return (
-      <span className="schedule-period">
+      <span className={`schedule-period ${typeCx}`}>
         <Select
           value={cron.periodType}
           onChange={this.handleChangePeriodType.bind(this)}
