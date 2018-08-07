@@ -209,7 +209,7 @@ class MonthCron extends Cron {
   format() {
     const { days, time } = this;
 
-    return `0 ${time.minutes()} ${time.hours()} ${days.join(",")} * * ?`;
+    return `0 ${time.minutes()} ${time.hours()} ${days.join(",")} * ?`;
   }
 
   constructor(cron: Partial<MonthCron>) {
