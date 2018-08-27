@@ -2,7 +2,7 @@ import * as Moment from "moment";
 import * as _ from "lodash";
 import * as React from "react";
 import { getI18N, getArr } from "./I18N";
-
+import { cronValidate } from "./cronExpValidator";
 export function isStrNum(str: string) {
   return !Number.isNaN(Number(str));
 }
@@ -114,7 +114,11 @@ export class Cron {
     if (!cronExp) {
       return new DayCron({});
     }
-
+    // 验证cronExp正确性
+    if (!cronValidate(cronExp)) {
+      return new DayCron({});
+    }
+    
     const [second, minute = "", hour = "", day, month, week] = cronExp.split(
       " "
     );
@@ -209,7 +213,9 @@ class MonthCron extends Cron {
   format() {
     const { days, time } = this;
 
-    return `0 ${time.minutes()} ${time.hours()} ${days.join(",")} * ?`;
+    return `0 ${time.minutes()} ${time.hours()} ${
+      days.length > 0 ? days.join(",") : "*"
+    } * ?`;
   }
 
   constructor(cron: Partial<MonthCron>) {
@@ -226,8 +232,9 @@ class WeekCron extends Cron {
 
   format() {
     const { weeks, time } = this;
-
-    return `0 ${time.minutes()} ${time.hours()} ? * ${weeks.join(",")}`;
+    return `0 ${time.minutes()} ${time.hours()} ? * ${
+      weeks.length > 0 ? weeks.join(",") : "*"
+    }`;
   }
 
   constructor(cron: Partial<WeekCron>) {
@@ -252,7 +259,7 @@ class HourCron extends Cron {
     if (hasInterval) {
       return `0 ${beginTime.minutes()} ${beginTime.hours()}-${endTime.hours()}/${stepHour} * * ?`;
     } else {
-      return `0 0 ${hours.join(",")} * * ?`;
+      return `0 0 ${hours.length > 0 ? hours.join(",") : "*"} * * ?`;
     }
   }
 
