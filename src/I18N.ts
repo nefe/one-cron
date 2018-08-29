@@ -30,7 +30,8 @@ let I18NList = {
     minute: "分钟"
   },
   weekItemsList: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],
-  dayItemsList: getArr(31, 1).map(num => `${num}日`)
+  dayItemsList: getArr(31, 1).map(num => `${num}日`),
+  errorCronExp:'cron表达式语法错误'
 };
 
 /**
@@ -71,7 +72,8 @@ function getI18N(lang = "Chinese"): typeof I18NList {
           day = `${num}th`;
         }
         return day;
-      })
+      }),
+      errorCronExp:'Sorry,there has syntax error in Cron Expression.'
     };
   }
   return I18NList;

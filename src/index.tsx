@@ -13,6 +13,7 @@ import {
   getSteoHourItems,
   getHourItems
 } from "./cronUtils";
+import { cronValidate } from "./cronExpValidator";
 import { getI18N } from "./I18N";
 const Option = Select.Option;
 const RadioGroup = Radio.Group;
@@ -256,7 +257,7 @@ export default class OneCron extends React.Component<
     const I18N = getI18N(sLang);
     const { cron } = this.state;
     const typeCx = cron.periodType;
-
+    const isValidate = cronValidate(cronExpression);
     return (
       <span className={`schedule-period ${typeCx}`}>
         <Select
@@ -280,6 +281,9 @@ export default class OneCron extends React.Component<
           </Checkbox>
         )}
         {this.renderDetail()}
+        {!isValidate && (
+          <span className="errorCronExp">{I18N.errorCronExp}</span>
+        )}
       </span>
     );
   }
