@@ -31,7 +31,7 @@ let I18NList = {
   },
   weekItemsList: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],
   dayItemsList: getArr(31, 1).map(num => `${num}日`),
-  errorCronExp:'cron表达式语法错误'
+  errorCronExp: "cron表达式语法错误"
 };
 
 /**
@@ -46,10 +46,10 @@ function getI18N(lang = "Chinese"): typeof I18NList {
       start: "Start",
       end: "End",
       step: "Interval",
-      stepMinuteUnit: "minute",
-      stepHourUnit: "hour",
+      stepMinuteUnit: "Minute",
+      stepHourUnit: "Hour",
       hourUnit: ":00",
-      period: "Time period",
+      period: "Time Period",
       point: "Time Point",
       timing: "Timed Dispatch",
       translateMap: {
@@ -73,7 +73,7 @@ function getI18N(lang = "Chinese"): typeof I18NList {
         }
         return day;
       }),
-      errorCronExp:'Sorry,there has syntax error in Cron Expression.'
+      errorCronExp: "Sorry,there has syntax error in Cron Expression."
     };
   }
   return I18NList;
