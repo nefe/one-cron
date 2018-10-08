@@ -37,7 +37,8 @@ export * from "./cronUtils";
 
 export enum I18NEnum {
   Chinese = "Chinese",
-  English = "English"
+  English = "English",
+  Chinese_Traditional = "Chinese_Traditional"
 }
 export class OneCronProps {
   cronExpression? = "0 0 0 * * ?";
