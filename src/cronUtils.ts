@@ -1,7 +1,7 @@
 import * as Moment from "moment";
 import * as _ from "lodash";
 import * as React from "react";
-import { getI18N, getArr } from "./I18N";
+import { getI18N, getArr, LangEnum } from "./I18N";
 import { cronValidate } from "./cronExpValidator";
 export function isStrNum(str: string) {
   return !Number.isNaN(Number(str));
@@ -15,7 +15,7 @@ export enum PeriodType {
   minute = "minute"
 }
 
-export const getPeriodItems = (lang: string) =>
+export const getPeriodItems = (lang: LangEnum) =>
   Object.values(PeriodType).map(item => {
     const I18N = getI18N(lang);
     const TranslateMap = I18N["translateMap"];
@@ -25,7 +25,7 @@ export const getPeriodItems = (lang: string) =>
     };
   });
 
-export const getHourItems = (lang: string) => {
+export const getHourItems = (lang: LangEnum) => {
   const hourUnit = getI18N(lang).hourUnit;
   return getArr(24).map(num => ({
     text: `${num}${hourUnit}`,
@@ -33,7 +33,7 @@ export const getHourItems = (lang: string) => {
   }));
 };
 
-export const getDayItems = (lang: string) => {
+export const getDayItems = (lang: LangEnum) => {
   const dayItemsList = getI18N(lang).dayItemsList;
   return dayItemsList.map(num => {
     return {
@@ -43,7 +43,7 @@ export const getDayItems = (lang: string) => {
   });
 };
 
-export const getWeekItems = (lang: string) => {
+export const getWeekItems = (lang: LangEnum) => {
   const I18N = getI18N(lang);
   const weekItemsList = I18N["weekItemsList"];
   return weekItemsList.map((day, dayIndex) => {
