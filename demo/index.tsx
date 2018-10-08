@@ -27,7 +27,7 @@ class App extends React.Component<Prop, State> {
       <div style={{ margin: 50 }}>
         <OneCron
           showCheckbox={true}
-          lang="English"
+          lang="Chinese_Traditional"
           onChange={exp => this.handleChange(exp)}
           cronExpression={this.state.cronExpression}
         />
