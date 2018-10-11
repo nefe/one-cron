@@ -12,6 +12,13 @@ function getArr(length: number, beginNum = 0, arr = []): number[] {
   return getArr(length - 1, beginNum + 1, [...arr, beginNum]);
 }
 
+export enum LangEnum {
+  zh_CN = 'zh_CN',
+  en_US = 'en_US',
+  zh_TW = 'zh_TW'
+}
+
+// 中文简体
 let I18NList = {
   start: "开始",
   end: "结束",
@@ -34,14 +41,37 @@ let I18NList = {
   errorCronExp: "cron表达式语法错误"
 };
 
+// 中文繁体
+let I18NList_traditional = {
+  start: "開始",
+  end: "結束",
+  step: "間隔",
+  stepMinuteUnit: "分鐘",
+  stepHourUnit: "小時",
+  hourUnit: "時",
+  period: "時間段",
+  point: "時間點",
+  timing: "定時",
+  translateMap: {
+    day: "日",
+    week: "周",
+    month: "月",
+    hour: "小時",
+    minute: "分鐘"
+  },
+  weekItemsList: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],
+  dayItemsList: getArr(31, 1).map(num => `${num}日`),
+  errorCronExp: "cron表達式語法錯誤"
+};
+
 /**
  * 得到一个I18N json
  * @param lang 语言
  */
-function getI18N(lang = "Chinese"): typeof I18NList {
-  if (lang === "Chinese") {
+function getI18N(lang = LangEnum.zh_CN): typeof I18NList {
+  if (lang === LangEnum.zh_CN) {
     return I18NList;
-  } else if (lang === "English") {
+  } else if (lang === LangEnum.en_US) {
     I18NList = {
       start: "Start",
       end: "End",
@@ -75,6 +105,8 @@ function getI18N(lang = "Chinese"): typeof I18NList {
       }),
       errorCronExp: "Sorry,there has syntax error in Cron Expression."
     };
+  } else if (lang === LangEnum.zh_TW) {
+    I18NList = I18NList_traditional;
   }
   return I18NList;
 }

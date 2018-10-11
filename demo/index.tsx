@@ -12,6 +12,11 @@ type Prop = {
   onChange?: () => void;
   cronExpression?: string;
 };
+enum LangEnum {
+  zh_CN = 'zh_CN',
+  en_US = 'en_US',
+  zh_TW = 'zh_TW'
+}
 class App extends React.Component<Prop, State> {
   state: State = {
     cronExpression: "0 0 0-3/1 * * ?"
@@ -27,7 +32,7 @@ class App extends React.Component<Prop, State> {
       <div style={{ margin: 50 }}>
         <OneCron
           showCheckbox={true}
-          lang="English"
+          lang={LangEnum.zh_TW}
           onChange={exp => this.handleChange(exp)}
           cronExpression={this.state.cronExpression}
         />
