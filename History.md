@@ -1,3 +1,8 @@
+0.2.0 / 2018-10-15
+==================
+
+* Merge pull request #5 from nefe/feat/addChineseTraditional
+
 0.1.18 / 2018-09-06
 ==================
 
