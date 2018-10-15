@@ -1,6 +1,6 @@
 {
   "name": "one-cron",
-  "version": "0.1.18",
+  "version": "0.2.0",
   "description": "",
   "main": "lib/index.js",
   "typings": "src/index.tsx",
