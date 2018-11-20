@@ -229,7 +229,7 @@ export default class OneCron extends React.Component<
                 value={cron.hours}
                 style={{ width: 200 }}
                 onChange={(value: string[]) => {
-                  cron.hours = value;
+                  cron.hours = value.sort((a, b) => +a - +b);
                   this.triggerChange();
                 }}
               >
