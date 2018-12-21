@@ -3,9 +3,8 @@
 一款以 Cron Expressions 为桥梁的定时调度组件，支持国际化等功能。
 
 ![image](https://travis-ci.com/nefe/one-cron.svg?branch=master)
-
 [![npm version](https://badge.fury.io/js/one-cron.png)](https://badge.fury.io/js/one-cron)
-[![npm downloads](https://img.shields.io/npm/nefe/one-cron.svg?style=flat-square)](https://www.npmjs.com/package/one-cron)
+[![npm downloads](https://img.shields.io/npm/dt/one-cron.svg?style=flat-square)](https://www.npmjs.com/package/one-cron)
 
 ## Cron Expressions
 
