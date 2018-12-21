@@ -13,13 +13,13 @@ type Prop = {
   cronExpression?: string;
 };
 enum LangEnum {
-  zh_CN = 'zh_CN',
-  en_US = 'en_US',
-  zh_TW = 'zh_TW'
+  zh_CN = "zh_CN",
+  en_US = "en_US",
+  zh_TW = "zh_TW"
 }
 class App extends React.Component<Prop, State> {
   state: State = {
-    cronExpression: "0 0 0-3/1 * * ?"
+    cronExpression: "0 0 0-0/1 * * ?"
   };
   handleChange(exp) {
     this.setState({
