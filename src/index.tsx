@@ -1,5 +1,7 @@
 import * as React from "react";
 import { Select, Checkbox, TimePicker, Radio } from "antd";
+import * as Moment from "moment";
+import { getArr } from "./I18N";
 
 import {
   Cron,
@@ -95,6 +97,10 @@ export default class OneCron extends React.Component<
     this.forceUpdate();
   }
 
+  disabledHours = (endTime: number) => {
+    return getArr(24 - endTime, endTime + 1);
+  };
+
   renderDetail() {
     const { cron } = this.state;
     const { lang, showCheckbox } = this.props;
@@ -156,11 +162,15 @@ export default class OneCron extends React.Component<
       }
 
       case PeriodType.minute: {
+        const endTime = +Moment(getCommonProps(cron, "endTime").value).format(
+          "HH"
+        );
         return (
           <span>
             <span className="form-item">
               <span className="form-item-title">{I18N.start}</span>
               <TimePicker
+                disabledHours={this.disabledHours.bind(this, endTime)}
                 format="HH:mm"
                 {...getCommonProps(cron, "beginTime")}
               />
@@ -184,6 +194,9 @@ export default class OneCron extends React.Component<
       }
 
       case PeriodType.hour: {
+        const endTime = +Moment(getCommonProps(cron, "endTime").value).format(
+          "HH"
+        );
         return (
           <span>
             <RadioGroup
@@ -201,6 +214,7 @@ export default class OneCron extends React.Component<
                 <span className="form-item">
                   <span className="form-item-title">{I18N.start}</span>
                   <TimePicker
+                    disabledHours={this.disabledHours.bind(this, endTime)}
                     format="HH:mm"
                     {...getCommonProps(cron, "beginTime")}
                   />
@@ -252,6 +266,7 @@ export default class OneCron extends React.Component<
     const { cron } = this.state;
     const typeCx = cron.periodType;
     const isValidate = cronValidate(cronExpression);
+
     return (
       <span className={`schedule-period ${typeCx}`}>
         <Select
