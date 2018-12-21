@@ -277,7 +277,7 @@ function checkFieldWithLetter(
 function checkIncrementField(value, minimal, maximal) {
   const start = value.substring(0, value.indexOf("/"));
   const increment = value.substring(value.indexOf("/") + 1);
-  
+
   if (!("*" === start)) {
     return (
       checkIntValue(start, minimal, maximal, true) &&
