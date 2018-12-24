@@ -24,6 +24,7 @@ interface Item {
   text: string;
   value: string;
 }
+type disabledtype = "start" | "end";
 
 function getOptions(items: Item[]) {
   return items.map(item => {
@@ -47,6 +48,7 @@ interface OneCronState {
   cron: AllCron;
   cronType: PeriodType;
   isEmpty: boolean;
+  endOpen: boolean;
 }
 export default class OneCron extends React.Component<
   OneCronProps,
@@ -61,7 +63,8 @@ export default class OneCron extends React.Component<
     this.state = {
       cron,
       cronType: cron.periodType,
-      isEmpty: !props.cronExpression
+      isEmpty: !props.cronExpression,
+      endOpen: false
     };
   }
 
@@ -97,12 +100,25 @@ export default class OneCron extends React.Component<
     this.forceUpdate();
   }
 
-  disabledHours = (endTime: number) => {
-    return getArr(24 - endTime, endTime + 1);
+  disabledHours = (endTime: number, type: disabledtype = "end") => {
+    if (type === "end") {
+      return getArr(24 - endTime, endTime + 1);
+    } else {
+      return getArr(endTime, 0);
+    }
+  };
+  handleStartOpenChange = (open: boolean) => {
+    if (!open) {
+      this.setState({ endOpen: true });
+    }
+  };
+
+  handleEndOpenChange = (open: boolean) => {
+    this.setState({ endOpen: open });
   };
 
   renderDetail() {
-    const { cron } = this.state;
+    const { cron, endOpen } = this.state;
     const { lang, showCheckbox } = this.props;
     const I18N = getI18N(lang);
     const getCommonProps = <T extends any, Key extends keyof T>(
@@ -162,6 +178,9 @@ export default class OneCron extends React.Component<
       }
 
       case PeriodType.minute: {
+        const startTime = +Moment(
+          getCommonProps(cron, "beginTime").value
+        ).format("HH");
         const endTime = +Moment(getCommonProps(cron, "endTime").value).format(
           "HH"
         );
@@ -170,8 +189,9 @@ export default class OneCron extends React.Component<
             <span className="form-item">
               <span className="form-item-title">{I18N.start}</span>
               <TimePicker
-                disabledHours={this.disabledHours.bind(this, endTime)}
+                disabledHours={this.disabledHours.bind(this, endTime, "end")}
                 format="HH:mm"
+                onOpenChange={this.handleStartOpenChange}
                 {...getCommonProps(cron, "beginTime")}
               />
             </span>
@@ -187,13 +207,26 @@ export default class OneCron extends React.Component<
             </span>
             <span className="form-item">
               <span className="form-item-title">{I18N.end}</span>
-              <TimePicker format="HH:mm" {...getCommonProps(cron, "endTime")} />
+              <TimePicker
+                format="HH:mm"
+                {...getCommonProps(cron, "endTime")}
+                disabledHours={this.disabledHours.bind(
+                  this,
+                  startTime,
+                  "start"
+                )}
+                open={endOpen}
+                onOpenChange={this.handleEndOpenChange}
+              />
             </span>
           </span>
         );
       }
 
       case PeriodType.hour: {
+        const startTime = +Moment(
+          getCommonProps(cron, "beginTime").value
+        ).format("HH");
         const endTime = +Moment(getCommonProps(cron, "endTime").value).format(
           "HH"
         );
@@ -214,7 +247,12 @@ export default class OneCron extends React.Component<
                 <span className="form-item">
                   <span className="form-item-title">{I18N.start}</span>
                   <TimePicker
-                    disabledHours={this.disabledHours.bind(this, endTime)}
+                    disabledHours={this.disabledHours.bind(
+                      this,
+                      endTime,
+                      "end"
+                    )}
+                    onOpenChange={this.handleStartOpenChange}
                     format="HH:mm"
                     {...getCommonProps(cron, "beginTime")}
                   />
@@ -233,6 +271,13 @@ export default class OneCron extends React.Component<
                   <span className="form-item-title">{I18N.end}</span>
                   <TimePicker
                     format="HH:mm"
+                    disabledHours={this.disabledHours.bind(
+                      this,
+                      startTime,
+                      "start"
+                    )}
+                    open={endOpen}
+                    onOpenChange={this.handleEndOpenChange}
                     {...getCommonProps(cron, "endTime")}
                   />
                 </span>
