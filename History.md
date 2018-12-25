@@ -1,3 +1,8 @@
+0.2.4 / 2018-12-25
+==================
+
+* Merge pull request #9 from nefe/feat/addDisabledHours
+
 0.2.3 / 2018-12-24
 ==================
 
