@@ -118,7 +118,7 @@ export class Cron {
     if (!cronValidate(cronExp)) {
       return new DayCron({});
     }
-    
+
     const [second, minute = "", hour = "", day, month, week] = cronExp.split(
       " "
     );
@@ -250,7 +250,7 @@ class HourCron extends Cron {
   hasInterval = false;
   hours? = [] as string[];
   beginTime? = Moment("00:00", "HH:mm");
-  endTime? = Moment("00:00", "HH:mm");
+  endTime? = Moment("23:59", "HH:mm");
   stepHour? = "1";
 
   format() {
@@ -273,7 +273,7 @@ class MinuteCron extends Cron {
   readonly periodType = PeriodType.minute;
 
   beginTime? = Moment("00:00", "HH:mm");
-  endTime? = Moment("00:00", "HH:mm");
+  endTime? = Moment("23:59", "HH:mm");
   stepMinute? = "05";
 
   format() {
