@@ -102,9 +102,9 @@ export default class OneCron extends React.Component<
 
   disabledHours = (endTime: number, type: disabledtype = "end") => {
     if (type === "end") {
-      return getArr(24 - endTime, endTime + 1);
+      return getArr(24 - endTime, endTime === 0 ? 1 : endTime);
     } else {
-      return getArr(endTime, 0);
+      return getArr(endTime + 1, 0);
     }
   };
   handleStartOpenChange = (open: boolean) => {
