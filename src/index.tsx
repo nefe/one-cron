@@ -154,6 +154,10 @@ export default class OneCron extends React.Component<
               mode="tags"
               style={{ width: 200 }}
               {...getCommonProps(cron, "weeks")}
+              onChange={(value: string[]) => {
+                cron.weeks = value.sort((a, b) => +a - +b);
+                this.triggerChange();
+              }}
             >
               {getOptions(getWeekItems(lang))}
             </Select>
