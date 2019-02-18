@@ -43,6 +43,7 @@ export class OneCronProps {
   onChange? = (exp: AllCron) => {};
   lang? = LangEnum.en_US;
   showCheckbox? = false;
+  disabled? = false;
 }
 interface OneCronState {
   cron: AllCron;
@@ -119,7 +120,7 @@ export default class OneCron extends React.Component<
 
   renderDetail() {
     const { cron, endOpen } = this.state;
-    const { lang, showCheckbox } = this.props;
+    const { lang, showCheckbox, disabled } = this.props;
     const I18N = getI18N(lang);
     const getCommonProps = <T extends any, Key extends keyof T>(
       cronBO: T,
@@ -144,7 +145,7 @@ export default class OneCron extends React.Component<
           cron.changeIsSchedule(!showCheckbox);
         }
 
-        return <TimePicker format="HH:mm" {...getCommonProps(cron, "time")} />;
+        return <TimePicker format="HH:mm" {...getCommonProps(cron, "time")} disabled={disabled}/>;
       }
 
       case PeriodType.week: {
@@ -310,7 +311,7 @@ export default class OneCron extends React.Component<
   }
 
   render() {
-    const { cronExpression, onChange, lang, showCheckbox } = this.props;
+    const { cronExpression, onChange, lang, showCheckbox, disabled } = this.props;
     const I18N = getI18N(lang);
     const { cron } = this.state;
     const typeCx = cron.periodType;
@@ -321,6 +322,7 @@ export default class OneCron extends React.Component<
         <Select
           value={cron.periodType}
           onChange={this.handleChangePeriodType.bind(this)}
+          disabled={disabled}
         >
           {getOptions(getPeriodItems(lang))}
         </Select>
