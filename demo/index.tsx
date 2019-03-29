@@ -19,7 +19,7 @@ enum LangEnum {
 }
 class App extends React.Component<Prop, State> {
   state: State = {
-    cronExpression: "0 0 0 * * ?"
+    cronExpression: "0 0 7-14/1 * * ?"
   };
   handleChange(exp) {
     this.setState({
@@ -33,6 +33,7 @@ class App extends React.Component<Prop, State> {
         <OneCron
           showCheckbox={true}
           lang={LangEnum.zh_TW}
+          disabled={true}
           onChange={exp => this.handleChange(exp)}
           cronExpression={this.state.cronExpression}
         />
