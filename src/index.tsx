@@ -399,7 +399,7 @@ export default class OneCron extends React.Component<
           <span className="errorCronExp">{I18N.errorCronExp}</span>
         )}
         <span className="exp">
-          <span className="exp-title">cron 表达式：</span>
+          <span className="exp-title">{I18N.expTitle}</span>
           <span className="exp-cron">{cronExpression}</span>
         </span>
       </span>
