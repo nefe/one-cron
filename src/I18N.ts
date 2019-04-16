@@ -20,48 +20,50 @@ export enum LangEnum {
 
 // 中文简体
 let I18NList = {
-  start: "开始",
-  end: "结束",
-  step: "间隔",
-  stepMinuteUnit: "分钟",
-  stepHourUnit: "小时",
-  hourUnit: "时",
-  period: "时间段",
-  point: "时间点",
-  timing: "定时",
+  expTitle: 'cron 表达式',
+  start: '开始',
+  end: '结束',
+  step: '间隔',
+  stepMinuteUnit: '分钟',
+  stepHourUnit: '小时',
+  hourUnit: '时',
+  period: '时间段',
+  point: '时间点',
+  timing: '定时',
   translateMap: {
-    day: "日",
-    week: "周",
-    month: "月",
-    hour: "小时",
-    minute: "分钟"
+    day: '日',
+    week: '周',
+    month: '月',
+    hour: '小时',
+    minute: '分钟'
   },
-  weekItemsList: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],
+  weekItemsList: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
   dayItemsList: getArr(31, 1).map(num => `${num}日`),
-  errorCronExp: "cron表达式语法错误"
+  errorCronExp: 'cron表达式语法错误'
 };
 
 // 中文繁体
 let I18NList_traditional = {
-  start: "開始",
-  end: "結束",
-  step: "間隔",
-  stepMinuteUnit: "分鐘",
-  stepHourUnit: "小時",
-  hourUnit: "時",
-  period: "時間段",
-  point: "時間點",
-  timing: "定時",
+  expTitle: 'cron 表達式',
+  start: '開始',
+  end: '結束',
+  step: '間隔',
+  stepMinuteUnit: '分鐘',
+  stepHourUnit: '小時',
+  hourUnit: '時',
+  period: '時間段',
+  point: '時間點',
+  timing: '定時',
   translateMap: {
-    day: "日",
-    week: "周",
-    month: "月",
-    hour: "小時",
-    minute: "分鐘"
+    day: '日',
+    week: '周',
+    month: '月',
+    hour: '小時',
+    minute: '分鐘'
   },
-  weekItemsList: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],
+  weekItemsList: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
   dayItemsList: getArr(31, 1).map(num => `${num}日`),
-  errorCronExp: "cron表達式語法錯誤"
+  errorCronExp: 'cron表達式語法錯誤'
 };
 
 /**
@@ -73,23 +75,24 @@ function getI18N(lang = LangEnum.zh_CN): typeof I18NList {
     return I18NList;
   } else if (lang === LangEnum.en_US) {
     I18NList = {
-      start: "Start",
-      end: "End",
-      step: "Interval",
-      stepMinuteUnit: "Minute",
-      stepHourUnit: "Hour",
-      hourUnit: ":00",
-      period: "Time Period",
-      point: "Time Point",
-      timing: "Timed Dispatch",
+      expTitle: 'cron expression',
+      start: 'Start',
+      end: 'End',
+      step: 'Interval',
+      stepMinuteUnit: 'Minute',
+      stepHourUnit: 'Hour',
+      hourUnit: ':00',
+      period: 'Time Period',
+      point: 'Time Point',
+      timing: 'Timed Dispatch',
       translateMap: {
-        day: "Day",
-        week: "Week",
-        month: "Month",
-        hour: "Hour",
-        minute: "Minute"
+        day: 'Day',
+        week: 'Week',
+        month: 'Month',
+        hour: 'Hour',
+        minute: 'Minute'
       },
-      weekItemsList: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+      weekItemsList: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
       dayItemsList: getArr(31, 1).map(num => {
         let day;
         if (num === 1 || num === 21 || num === 31) {
@@ -103,7 +106,7 @@ function getI18N(lang = LangEnum.zh_CN): typeof I18NList {
         }
         return day;
       }),
-      errorCronExp: "Sorry,there has syntax error in Cron Expression."
+      errorCronExp: 'Sorry,there has syntax error in Cron Expression.'
     };
   } else if (lang === LangEnum.zh_TW) {
     I18NList = I18NList_traditional;
