@@ -3,6 +3,8 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { getI18N, getArr, LangEnum } from './I18N';
 import { cronValidate } from './cronExpValidator';
+import moment = require('moment');
+
 export function isStrNum(str: string) {
   return !Number.isNaN(Number(str));
 }
@@ -14,6 +16,8 @@ export enum PeriodType {
   hour = 'hour',
   minute = 'minute'
 }
+// 默认时间格式化形式
+export const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss'
 
 export const getPeriodItems = (lang: LangEnum) =>
   Object.values(PeriodType).map(item => {
@@ -192,6 +196,18 @@ export class DayCron extends Cron {
     this.isSchedule = isSchedule;
   }
 
+  /** 产生预测时间-Day */
+  getPredictedTimes(times = 5, format = DEFAULT_FORMAT): string[] {
+    const time = this.time;
+    const now = Moment();
+    // 当前时间之前是否是设置时间之前，若之前，则直接从第二天计算开始，否则从当天时间开始
+    const isBefore = now.isBefore(time)
+    const predictedTimes = getArr(times).map((current, index) =>
+      `${Moment(time).add(isBefore ? index : index + 1, 'days').format(format)}`)
+
+    return predictedTimes;
+  }
+
   format() {
     const time = this.time;
 
@@ -215,7 +231,40 @@ class MonthCron extends Cron {
 
     return `0 ${time.minutes()} ${time.hours()} ${
       days.length > 0 ? days.join(',') : '*'
-    } * ?`;
+      } * ?`;
+  }
+
+  /** 产生预测时间-Month */
+  getPredictedTimes(times = 5, format = DEFAULT_FORMAT): string[] {
+    const { days, time } = this;
+    const now = Moment();
+    const currentDay = Moment().format('DD');
+    let predictedTimes = []
+    if (days && days.length > 0) {
+      const sortedDays = days.sort((a, b) => +a - +b)
+      if (days.length > times) {
+        // 找到若插入sortedDays中的索引
+        const sortedIndex = _.sortedIndex(sortedDays, +currentDay);
+        predictedTimes = [..._.sortedUniq(sortedDays.slice(sortedIndex)), ..._.sortedUniq(sortedDays.slice(0, sortedIndex))]
+          .slice(0, times).map(selectedDay => {
+            const diff = +selectedDay - +currentDay
+            // 为当天时，则比较具体的时间
+            if (diff === 0) {
+              const isBefore = now.isBefore(time)
+              return Moment(time).add(isBefore ? 0 : 1, 'months').format(format);
+            } else {
+              return Moment(time).add(diff >= 0 ? 0 : 1, 'months').add(`${diff}`, 'days').format(format);
+            }
+          }).sort((a, b) => {
+            return +Moment(a).format('YYYYMMDD') - +Moment(b).format('YYYYMMDD');
+          })
+      } else {
+        while (predictedTimes.length <= 5) {
+          // TODO: 每一个月的XX号都执行
+        }
+      }
+    }
+    return predictedTimes;
   }
 
   constructor(cron: Partial<MonthCron>) {
@@ -234,9 +283,38 @@ class WeekCron extends Cron {
     const { weeks, time } = this;
     return `0 ${time.minutes()} ${time.hours()} ? * ${
       weeks.length > 0 ? weeks.join(',') : '*'
-    }`;
+      }`;
   }
+  /** 产生预测时间-Month */
+  getPredictedTimes(times = 5, format = DEFAULT_FORMAT): string[] {
+    const { weeks, time } = this;
+    const curretWeek = +Moment().format('E') % 7 + 1;
+    let predictedTimes = []
 
+    if (weeks && weeks.length > 0) {
+      if (weeks.length >= times) {
+        // 找到若插入sortedDays中的索引
+        const sortedIndex = _.sortedIndex(weeks, +curretWeek);
+        predictedTimes = [..._.sortedUniq(weeks.slice(sortedIndex)), ..._.sortedUniq(weeks.slice(0, sortedIndex))]
+          .slice(0, times).map((curret, index) => {
+            const diff = +curretWeek - +curret;
+            if (diff === 0) {
+              const isBefore = Moment().isBefore(time)
+              return Moment(time).add(isBefore ? 0 : 1, 'weeks').format(format);
+            } else {
+              return Moment(time).add(diff >= 0 ? 1 : 0, 'weeks').add(`${Math.abs(diff)}`, 'days').format(format)
+            }
+          }).sort((a, b) => {
+            return +Moment(a).format('YYYYMMDD') - +Moment(b).format('YYYYMMDD');
+          })
+      } else {
+
+      }
+
+    }
+    console.log('predictedTimes', predictedTimes)
+    return predictedTimes;
+  }
   constructor(cron: Partial<WeekCron>) {
     super();
     this.init(cron);
@@ -248,11 +326,11 @@ class HourCron extends Cron {
 
   /** 是否使用时间段 */
   hasInterval = false;
-  hours? = [] as string[];
-  beginTime? = Moment('00:00', 'HH:mm');
+  hours?= [] as string[];
+  beginTime?= Moment('00:00', 'HH:mm');
   // endTime minutes only 59
-  endTime? = Moment('23:59', 'HH:mm');
-  stepHour? = '1';
+  endTime?= Moment('23:59', 'HH:mm');
+  stepHour?= '1';
 
   format() {
     const { hasInterval, beginTime, endTime, hours, stepHour } = this;
@@ -273,9 +351,9 @@ class HourCron extends Cron {
 class MinuteCron extends Cron {
   readonly periodType = PeriodType.minute;
 
-  beginTime? = Moment('00:00', 'HH:mm');
-  endTime? = Moment('23:59', 'HH:mm');
-  stepMinute? = '05';
+  beginTime?= Moment('00:00', 'HH:mm');
+  endTime?= Moment('23:59', 'HH:mm');
+  stepMinute?= '05';
 
   format() {
     const { beginTime, endTime, stepMinute } = this;
