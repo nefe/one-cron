@@ -200,7 +200,8 @@ export class DayCron extends Cron {
   getPredictedTimes(times = 5, format = DEFAULT_FORMAT): string[] {
     const time = this.time;
     const now = Moment();
-    // 当前时间之前是否是设置时间之前，若之前，则直接从第二天计算开始，否则从当天时间开始
+    // isBefore表示当前时间之前是否是设置时间之前
+    // 若之前，则直接从第二天计算开始，否则从当天时间开始
     const isBefore = now.isBefore(time)
     const predictedTimes = getArr(times).map((current, index) =>
       `${Moment(time).add(isBefore ? index : index + 1, 'days').format(format)}`)
@@ -234,34 +235,49 @@ class MonthCron extends Cron {
       } * ?`;
   }
 
+  // 计算预测时间
+  generatePredicteTimes(times = 5, format = DEFAULT_FORMAT): string[] {
+    const { days, time } = this;
+    const sortedDays = days.sort((a, b) => +a - +b);
+    const now = Moment();
+    const currentDay = +Moment().format('DD');
+    const sortedIndex = _.sortedIndex(sortedDays, currentDay);
+    const predictedTimes = [..._.sortedUniq(sortedDays.slice(sortedIndex)), ..._.sortedUniq(sortedDays.slice(0, sortedIndex))]
+      .slice(0, times).map(selectedDay => {
+        const diff = +selectedDay - currentDay;
+        // 为当天时，则比较具体的时间
+        if (diff === 0) {
+          const isBefore = now.isBefore(time);
+          return Moment(time).add(isBefore ? 0 : 1, 'months').format(format);
+        } else {
+          return Moment(time).add(diff >= 0 ? 0 : 1, 'months').add(`${diff}`, 'days').format(format);
+        }
+      }).sort((a, b) => {
+        return +Moment(a).format('YYYYMMDD') - +Moment(b).format('YYYYMMDD');
+      })
+
+    return predictedTimes;
+  }
+
   /** 产生预测时间-Month */
   getPredictedTimes(times = 5, format = DEFAULT_FORMAT): string[] {
     const { days, time } = this;
-    const now = Moment();
-    const currentDay = Moment().format('DD');
-    let predictedTimes = []
+
+    let predictedTimes = [];
     if (days && days.length > 0) {
-      const sortedDays = days.sort((a, b) => +a - +b)
       if (days.length > times) {
-        // 找到若插入sortedDays中的索引
-        const sortedIndex = _.sortedIndex(sortedDays, +currentDay);
-        predictedTimes = [..._.sortedUniq(sortedDays.slice(sortedIndex)), ..._.sortedUniq(sortedDays.slice(0, sortedIndex))]
-          .slice(0, times).map(selectedDay => {
-            const diff = +selectedDay - +currentDay
-            // 为当天时，则比较具体的时间
-            if (diff === 0) {
-              const isBefore = now.isBefore(time)
-              return Moment(time).add(isBefore ? 0 : 1, 'months').format(format);
-            } else {
-              return Moment(time).add(diff >= 0 ? 0 : 1, 'months').add(`${diff}`, 'days').format(format);
-            }
-          }).sort((a, b) => {
-            return +Moment(a).format('YYYYMMDD') - +Moment(b).format('YYYYMMDD');
-          })
+        predictedTimes = this.generatePredicteTimes(times, format);
       } else {
-        while (predictedTimes.length <= 5) {
-          // TODO: 每一个月的XX号都执行
-        }
+        predictedTimes = this.generatePredicteTimes(times, format);
+        const list = [...predictedTimes]
+        // 每一个月的XX号都执行
+        getArr(times - days.length).forEach((item, index) => {
+          list.forEach(predictedTime => {
+            if (predictedTimes.length < times) {
+              predictedTimes.push(Moment(predictedTime).add(index + 1, 'months').format(format))
+            }
+          })
+        })
       }
     }
     return predictedTimes;
@@ -285,36 +301,52 @@ class WeekCron extends Cron {
       weeks.length > 0 ? weeks.join(',') : '*'
       }`;
   }
-  /** 产生预测时间-Month */
+
+  generatePredictedTime(times = 5, format = DEFAULT_FORMAT): string[] {
+    const { weeks, time } = this;
+    const curretWeek = +Moment().format('E') === 7 ? 0 : +Moment().format('E');
+    // 找到若插入sortedDays中的索引
+    const sortedIndex = _.sortedIndex(weeks, +curretWeek);
+    const predictedTimes = [..._.sortedUniq(weeks.slice(sortedIndex)), ..._.sortedUniq(weeks.slice(0, sortedIndex))]
+      .slice(0, times).map((child, index) => {
+        // child为1时表示为周日
+        const diff = child === 1 ? 7 - curretWeek : child - curretWeek - 1;
+        if (diff === 0) {
+          const isBefore = Moment().isBefore(time)
+          return Moment(time).add(isBefore ? 0 : 1, 'weeks').format(format);
+        } else {
+          return Moment(time).add(diff >= 0 ? 0 : 1, 'weeks').add(`${Math.abs(diff)}`, 'days').format(format)
+        }
+      }).sort((a, b) => {
+        return +Moment(a).format('YYYYMMDD') - +Moment(b).format('YYYYMMDD');
+      })
+    return predictedTimes;
+  }
+
+  /** 产生预测时间-Week */
   getPredictedTimes(times = 5, format = DEFAULT_FORMAT): string[] {
     const { weeks, time } = this;
-    const curretWeek = +Moment().format('E') % 7 + 1;
-    let predictedTimes = []
+    let predictedTimes = [];
 
     if (weeks && weeks.length > 0) {
       if (weeks.length >= times) {
-        // 找到若插入sortedDays中的索引
-        const sortedIndex = _.sortedIndex(weeks, +curretWeek);
-        predictedTimes = [..._.sortedUniq(weeks.slice(sortedIndex)), ..._.sortedUniq(weeks.slice(0, sortedIndex))]
-          .slice(0, times).map((curret, index) => {
-            const diff = +curretWeek - +curret;
-            if (diff === 0) {
-              const isBefore = Moment().isBefore(time)
-              return Moment(time).add(isBefore ? 0 : 1, 'weeks').format(format);
-            } else {
-              return Moment(time).add(diff >= 0 ? 1 : 0, 'weeks').add(`${Math.abs(diff)}`, 'days').format(format)
-            }
-          }).sort((a, b) => {
-            return +Moment(a).format('YYYYMMDD') - +Moment(b).format('YYYYMMDD');
-          })
+        predictedTimes = this.generatePredictedTime(times, format);
       } else {
+        predictedTimes = this.generatePredictedTime(times, format);
+        const list = [...predictedTimes];
 
+        getArr(times - weeks.length).forEach((item, index) => {
+          list.forEach(predictedTime => {
+            if (predictedTimes.length < times) {
+              predictedTimes.push(Moment(predictedTime).add((index + 1) * 7, 'days').format(format));
+            }
+          })
+        })
       }
-
     }
-    console.log('predictedTimes', predictedTimes)
     return predictedTimes;
   }
+
   constructor(cron: Partial<WeekCron>) {
     super();
     this.init(cron);
@@ -342,6 +374,14 @@ class HourCron extends Cron {
     }
   }
 
+  /** 产生预测时间-Hour */
+  getPredictedTimes(times = 5, format = DEFAULT_FORMAT): string[] {
+    const { hasInterval, beginTime, endTime, hours, stepHour } = this;
+    let predictedTimes = [];
+
+    return predictedTimes;
+  }
+
   constructor(cron: Partial<HourCron>) {
     super();
     this.init(cron);
@@ -354,6 +394,30 @@ class MinuteCron extends Cron {
   beginTime?= Moment('00:00', 'HH:mm');
   endTime?= Moment('23:59', 'HH:mm');
   stepMinute?= '05';
+
+  /** 计算获得的mins */
+  getMins(time) {
+    const seconds = Moment(time).minute() + Moment(time).hour() * 60;
+    return seconds;
+  }
+  /** 产生预测时间-Min */
+  getPredictedTimes(times = 5, format = DEFAULT_FORMAT): string[] {
+    const { beginTime, endTime, stepMinute } = this;
+    let predictedTimes = [];
+    const timeDiff = this.getMins(endTime) - this.getMins(beginTime);
+    if (timeDiff <= +stepMinute) {
+      // 判断开始结束时间是否大于间隔时间，否则返回开始时间
+      predictedTimes = [Moment(beginTime).format(format)]
+    } else {
+      // 结束时间减去开始时间/间隔，然后slice(0,times)
+      const count = timeDiff / +stepMinute
+      predictedTimes = getArr(count).slice(0, times).map((item, index) => {
+        return `${Moment(beginTime).add(+stepMinute * index, 'minutes').format(format)}`
+      })
+    }
+    return predictedTimes;
+  }
+
 
   format() {
     const { beginTime, endTime, stepMinute } = this;
