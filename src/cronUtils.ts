@@ -85,6 +85,13 @@ export const getStepMinuteItems = [
   };
 });
 
+/** 计算对应多少分钟 */
+export const getMins = (time: Moment.Moment): number => {
+  const seconds = Moment(time).minute() + Moment(time).hour() * 60;
+  return seconds;
+}
+
+
 export type AllCron = DayCron | WeekCron | MonthCron | HourCron | MinuteCron;
 
 export class Cron {
@@ -366,7 +373,6 @@ class HourCron extends Cron {
 
   format() {
     const { hasInterval, beginTime, endTime, hours, stepHour } = this;
-
     if (hasInterval) {
       return `0 ${beginTime.minutes()} ${beginTime.hours()}-${endTime.hours()}/${stepHour} * * ?`;
     } else {
@@ -374,10 +380,26 @@ class HourCron extends Cron {
     }
   }
 
+
   /** 产生预测时间-Hour */
   getPredictedTimes(times = 5, format = DEFAULT_FORMAT): string[] {
     const { hasInterval, beginTime, endTime, hours, stepHour } = this;
     let predictedTimes = [];
+
+    if (hasInterval) {
+      const minDiff = getMins(endTime) - getMins(beginTime);
+      if (minDiff <= +stepHour * 60) {
+        predictedTimes = [Moment(beginTime).format(format)];
+      } else {
+        // 结束时间减去开始时间/间隔，然后slice(0,times)
+        const count = minDiff / (+stepHour * 60)
+        predictedTimes = getArr(count).slice(0, times).map((item, index) =>
+          `${Moment(beginTime).add(+stepHour * index, 'hours').format(format)}`
+        )
+      }
+    } else {
+      predictedTimes = hours.slice(0, times).map(hour => `${moment(hour, "HH").format(format)}`);
+    }
 
     return predictedTimes;
   }
@@ -395,25 +417,20 @@ class MinuteCron extends Cron {
   endTime?= Moment('23:59', 'HH:mm');
   stepMinute?= '05';
 
-  /** 计算获得的mins */
-  getMins(time) {
-    const seconds = Moment(time).minute() + Moment(time).hour() * 60;
-    return seconds;
-  }
   /** 产生预测时间-Min */
   getPredictedTimes(times = 5, format = DEFAULT_FORMAT): string[] {
     const { beginTime, endTime, stepMinute } = this;
     let predictedTimes = [];
-    const timeDiff = this.getMins(endTime) - this.getMins(beginTime);
+    const timeDiff = getMins(endTime) - getMins(beginTime);
     if (timeDiff <= +stepMinute) {
       // 判断开始结束时间是否大于间隔时间，否则返回开始时间
       predictedTimes = [Moment(beginTime).format(format)]
     } else {
       // 结束时间减去开始时间/间隔，然后slice(0,times)
       const count = timeDiff / +stepMinute
-      predictedTimes = getArr(count).slice(0, times).map((item, index) => {
-        return `${Moment(beginTime).add(+stepMinute * index, 'minutes').format(format)}`
-      })
+      predictedTimes = getArr(count).slice(0, times).map((item, index) =>
+        `${Moment(beginTime).add(+stepMinute * index, 'minutes').format(format)}`
+      )
     }
     return predictedTimes;
   }
