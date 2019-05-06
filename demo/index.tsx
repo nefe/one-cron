@@ -1,7 +1,7 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import OneCron from '../src';
-import './index.css';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import OneCron from "../src";
+import "./index.css";
 
 type State = {
   cronExpression: string;
@@ -13,13 +13,13 @@ type Prop = {
   cronExpression?: string;
 };
 enum LangEnum {
-  zh_CN = 'zh_CN',
-  en_US = 'en_US',
-  zh_TW = 'zh_TW'
+  zh_CN = "zh_CN",
+  en_US = "en_US",
+  zh_TW = "zh_TW"
 }
 class App extends React.Component<Prop, State> {
   state: State = {
-    cronExpression: '0 0 7-14/1 * * ?'
+    cronExpression: "0 0 7-14/1 * * ?"
   };
   handleChange(exp) {
     this.setState({
@@ -35,10 +35,11 @@ class App extends React.Component<Prop, State> {
           lang={LangEnum.zh_CN}
           onChange={exp => this.handleChange(exp)}
           cronExpression={this.state.cronExpression}
+          showRecentTime={true}
         />
       </div>
     );
   }
 }
 
-ReactDOM.render(<App />, document.getElementById('app'));
+ReactDOM.render(<App />, document.getElementById("app"));

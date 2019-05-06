@@ -21,6 +21,7 @@ export enum LangEnum {
 // 中文简体
 let I18NList = {
   expTitle: 'cron 表达式',
+  recentTimes:'最近的生成时间',
   start: '开始',
   end: '结束',
   step: '间隔',
@@ -45,6 +46,7 @@ let I18NList = {
 // 中文繁体
 let I18NList_traditional = {
   expTitle: 'cron 表達式',
+  recentTimes:'最近的生成時間',
   start: '開始',
   end: '結束',
   step: '間隔',
@@ -76,6 +78,7 @@ function getI18N(lang = LangEnum.zh_CN): typeof I18NList {
   } else if (lang === LangEnum.en_US) {
     I18NList = {
       expTitle: 'cron expression',
+      recentTimes: 'Recently generated time',
       start: 'Start',
       end: 'End',
       step: 'Interval',
