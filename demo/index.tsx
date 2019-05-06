@@ -25,7 +25,7 @@ class App extends React.Component<Prop, State> {
     this.setState({
       cronExpression: exp.format()
     });
-    console.log(exp, exp.format());
+    console.log(exp, exp.format(), exp.getPredictedTimes());
   }
   render() {
     return (
