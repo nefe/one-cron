@@ -20,9 +20,10 @@
 
 | Name           | Type     | Default         | Description                                                                    |
 | -------------- | -------- | --------------- | ------------------------------------------------------------------------------ |
-| lang           | enum     | 'en_US'         | 选项:'zh_CN','en_US','zh_TW'                                                   |
+| lang           | enum     | 'en_US'         | 选项:'zh_CN','en_US','zh_TW'    |
 | onChange       | Function |                 | 默认传来一个参数，为对象类型，提供 format 方法，可以拿到对应的 cron expression |
-| cronExpression | String   | '0 0 0 \* \* ?' | 通过 cronExpression 的规则显示初始值                                           |
+| cronExpression | String   | '0 0 0 \* \* ?' | 通过 cronExpression 的规则显示初始值   | 
+| options |  Array  | 全部 | 数组值选项：'day', 'week', 'month', 'hour', 'minute'    |
 
 ## License
 
