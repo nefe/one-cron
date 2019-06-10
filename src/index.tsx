@@ -45,6 +45,8 @@ export class OneCronProps {
   showCheckbox? = false;
   disabled? = false;
   showRecentTime? = false;
+  /** 可配置时间粒度 */
+  options? = Object.values(PeriodType);
 }
 interface OneCronState {
   cron: AllCron;
@@ -376,7 +378,8 @@ export default class OneCron extends React.Component<
       lang,
       showCheckbox,
       disabled,
-      showRecentTime
+      showRecentTime,
+      options
     } = this.props;
     const I18N = getI18N(lang);
     const { cron } = this.state;
@@ -390,7 +393,7 @@ export default class OneCron extends React.Component<
           onChange={this.handleChangePeriodType.bind(this)}
           disabled={disabled}
         >
-          {getOptions(getPeriodItems(lang))}
+          {getOptions(getPeriodItems(lang, options))}
         </Select>
         {!!showCheckbox && (
           <Checkbox
