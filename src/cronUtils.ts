@@ -19,8 +19,8 @@ export enum PeriodType {
 // 默认时间格式化形式
 export const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss'
 
-export const getPeriodItems = (lang: LangEnum) =>
-  Object.values(PeriodType).map(item => {
+export const getPeriodItems = (lang: LangEnum, timeOptions: PeriodType[]) =>
+  timeOptions.filter(item => Object.values(PeriodType).includes(item)).map(item => {
     const I18N = getI18N(lang);
     const TranslateMap = I18N['translateMap'];
     return {
