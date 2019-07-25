@@ -1,112 +1,94 @@
-0.2.13 / 2019-04-19
-==================
+# 0.2.13 / 2019-07-25
 
-* deploy 0.2.12
+- update cronValidate
 
-0.2.12 / 2019-04-16
-==================
+  # 0.2.13 / 2019-04-19
 
-* deploy 0.2.11
+- deploy 0.2.12
 
-0.2.11 / 2019-04-16
-==================
+  # 0.2.12 / 2019-04-16
 
-* deploy 0.2.10
+- deploy 0.2.11
 
-0.2.10 / 2019-04-16
-==================
+  # 0.2.11 / 2019-04-16
 
-* deploy 0.2.9
+- deploy 0.2.10
 
-0.2.9 / 2019-03-29
-==================
+  # 0.2.10 / 2019-04-16
 
-* fix: fix disabled
+- deploy 0.2.9
 
-0.2.8 / 2019-02-18
-==================
+  # 0.2.9 / 2019-03-29
 
-* chore: update version
+- fix: fix disabled
 
-0.2.6 / 2019-01-14
-==================
+  # 0.2.8 / 2019-02-18
 
-* Merge branch 'master' of github.com:nefe/one-cron
+- chore: update version
 
-0.2.5 / 2019-01-14
-==================
+  # 0.2.6 / 2019-01-14
 
-* deploy 0.2.4
+- Merge branch 'master' of github.com:nefe/one-cron
 
-0.2.4 / 2018-12-25
-==================
+  # 0.2.5 / 2019-01-14
 
-* Merge pull request #9 from nefe/feat/addDisabledHours
+- deploy 0.2.4
 
-0.2.3 / 2018-12-24
-==================
+  # 0.2.4 / 2018-12-25
 
-* Merge pull request #8 from nefe/feat/addDisabledHours
+- Merge pull request #9 from nefe/feat/addDisabledHours
 
-0.2.2 / 2018-12-21
-==================
+  # 0.2.3 / 2018-12-24
 
-* Merge pull request #7 from nefe/feat/addDisabledHours
+- Merge pull request #8 from nefe/feat/addDisabledHours
 
-0.2.1 / 2018-11-20
-==================
+  # 0.2.2 / 2018-12-21
 
-* Merge pull request #6 from nefe/fix/syntaxError
+- Merge pull request #7 from nefe/feat/addDisabledHours
 
-0.2.0 / 2018-10-15
-==================
+  # 0.2.1 / 2018-11-20
 
-* Merge pull request #5 from nefe/feat/addChineseTraditional
+- Merge pull request #6 from nefe/fix/syntaxError
 
-0.1.18 / 2018-09-06
-==================
+  # 0.2.0 / 2018-10-15
 
-* fix: fix i18n text uppercase
+- Merge pull request #5 from nefe/feat/addChineseTraditional
 
-0.1.17 / 2018-08-07
-==================
+  # 0.1.18 / 2018-09-06
 
-* fix: fix month cron
+- fix: fix i18n text uppercase
 
-0.1.16 / 2018-06-25
-==================
+  # 0.1.17 / 2018-08-07
 
-* add periodType in className
+- fix: fix month cron
 
-0.1.15 / 2018-06-11
-==================
+  # 0.1.16 / 2018-06-25
 
-* fix: fix week cron pos
+- add periodType in className
 
-0.1.14 / 2018-06-11
-==================
+  # 0.1.15 / 2018-06-11
 
-* fix: fix cwr cronexp
+- fix: fix week cron pos
 
-0.1.13 / 2018-06-11
-==================
+  # 0.1.14 / 2018-06-11
 
-* fix: fix cron is empty initilly
+- fix: fix cwr cronexp
 
-0.1.12 / 2018-06-11
-==================
+  # 0.1.13 / 2018-06-11
 
-* add export * in cronutils
+- fix: fix cron is empty initilly
 
-0.1.11 / 2018-06-11
-==================
+  # 0.1.12 / 2018-06-11
 
-* deploy 0.1.10
+- add export \* in cronutils
 
-0.1.10 / 2018-06-11
-==================
+  # 0.1.11 / 2018-06-11
 
-* fix: fix week items
+- deploy 0.1.10
+
+  # 0.1.10 / 2018-06-11
+
+- fix: fix week items
 
 # 0.1.9 / 2018-06-11
 
