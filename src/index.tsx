@@ -431,3 +431,6 @@ export default class OneCron extends React.Component<
     );
   }
 }
+
+// 提供cron Expression验证方法
+export { cronValidate };

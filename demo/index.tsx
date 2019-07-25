@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import OneCron from "../src";
+import OneCron, { cronValidate } from "../src";
 import "./index.css";
 
 type State = {
@@ -26,6 +26,9 @@ class App extends React.Component<Prop, State> {
       cronExpression: exp.format()
     });
     console.log(exp, exp.format(), exp.getPredictedTimes());
+  }
+  componentDidMount() {
+    console.log(cronValidate("0 0 7-14/1 * * ?"));
   }
   render() {
     return (
