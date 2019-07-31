@@ -1,4 +1,8 @@
-# 0.2.13 / 2019-07-25
+# 0.2.18 / 2019-07-31
+
+- update cronValidate
+
+# 0.2.17 / 2019-07-25
 
 - update cronValidate
 
