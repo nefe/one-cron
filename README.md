@@ -26,6 +26,8 @@
 | showRecentTime | boolean  | false           | 显示最近 5 次生成时间                                                          |
 | options        | Array    | 全部            | 数组值选项：'day', 'week', 'month', 'hour', 'minute'                           |
 | disabled       | boolean  | false           | 不可操作                                                                       |
+| beginTime      | number   | 0               | 可选择的起始时间                                                               |
+| endTime        | number   | 24              | 可选择的结束时间                                                               |
 
 ## License
 
