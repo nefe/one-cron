@@ -5,7 +5,7 @@
  * @return True is expression is valid
  */
 export function cronValidate(cronExpression: string) {
-  var cronParams = cronExpression.split(" ");
+  var cronParams = cronExpression ? cronExpression.split(" ") : "";
 
   if (cronParams.length < 6 || cronParams.length > 7) {
     return false;
