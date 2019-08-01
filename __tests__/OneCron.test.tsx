@@ -13,9 +13,7 @@ it("renders the correct language when lang prop is English", () => {
 });
 
 it("checkbox not show when showCheckbox is false", () => {
-  const cronOne = Enzyme.render(
-    <OneCron showCheckbox={false} cronExpression='0 0 2 * * ?' />
-  );
+  const cronOne = Enzyme.render(<OneCron showCheckbox={false} />);
   expect(cronOne.find(".ant-checkbox-input").length).toEqual(0);
 });
 
