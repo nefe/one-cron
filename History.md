@@ -1,8 +1,6 @@
-# 0.2.18 / 2019-08-01
+# 0.2.19 / 2019-08-01
 
 - delete default value and bugfix
-
-- add beginTime and endTime
 
 # 0.2.18 / 2019-07-31
 

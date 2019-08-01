@@ -50,9 +50,9 @@ export class OneCronProps {
   /** 可配置时间粒度 */
   options? = Object.values(PeriodType);
   /** 开始时间，用于小时选择 */
-  beginTime?: number;
+  beginTime? = 0;
   /** 结束时间，用于小时选择 */
-  endTime?: number;
+  endTime? = 24;
 }
 interface OneCronState {
   cron: AllCron;
@@ -360,7 +360,7 @@ export default class OneCron extends React.Component<
                       "end"
                     )}
                     onOpenChange={this.handleStartOpenChange}
-                    format='HH'
+                    format='HH:mm'
                     {...getCommonProps(cron, "beginTime", PeriodType.hour)}
                   />
                 </span>
@@ -379,7 +379,7 @@ export default class OneCron extends React.Component<
                   <span className='form-item-title'>{I18N.end}</span>
                   <TimePicker
                     disabled={disabled}
-                    format='HH'
+                    format='HH:mm'
                     disabledHours={this.disabledHours.bind(
                       this,
                       startTime,
