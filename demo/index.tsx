@@ -39,8 +39,6 @@ class App extends React.Component<Prop, State> {
           onChange={exp => this.handleChange(exp)}
           cronExpression={this.state.cronExpression}
           showRecentTime={true}
-          beginTime={8}
-          endTime={21}
         />
       </div>
     );
