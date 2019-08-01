@@ -1,6 +1,12 @@
+# 0.2.18 / 2019-08-01
+
+- delete default value and bugfix
+
+- add beginTime and endTime
+
 # 0.2.18 / 2019-07-31
 
-- update cronValidate
+- add beginTime and endTime
 
 # 0.2.17 / 2019-07-25
 
