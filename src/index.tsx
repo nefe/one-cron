@@ -41,7 +41,7 @@ function getOptions(items: Item[]) {
 export * from "./cronUtils";
 
 export class OneCronProps {
-  cronExpression? = "0 0 0 * * ?";
+  cronExpression?: string;
   onChange? = (exp: AllCron) => {};
   lang? = LangEnum.en_US;
   showCheckbox? = false;
