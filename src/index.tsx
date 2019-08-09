@@ -60,6 +60,7 @@ interface OneCronState {
   isEmpty: boolean;
   endOpen: boolean;
   timeList: string[];
+  weekList: string[];
 }
 export default class OneCron extends React.Component<
   OneCronProps,
@@ -76,7 +77,8 @@ export default class OneCron extends React.Component<
       cronType: cron.periodType,
       isEmpty: !props.cronExpression,
       endOpen: false,
-      timeList: []
+      timeList: [],
+      weekList: []
     };
   }
 
@@ -181,7 +183,6 @@ export default class OneCron extends React.Component<
           cronBO[key] = Moment(cronBO[key], "HH:mm").minute(59) as any;
         }
       }
-
       return {
         value: cronBO[key],
         onChange: value => {
@@ -236,7 +237,11 @@ export default class OneCron extends React.Component<
               onChange={(value: string[]) => {
                 cron.weeks = value.sort((a, b) => +a - +b);
                 this.triggerChange();
+                this.setState({
+                  weekList: value.sort((a, b) => +a - +b)
+                })
               }}
+              value={this.state.weekList}
             >
               {getOptions(getWeekItems(lang))}
             </Select>
