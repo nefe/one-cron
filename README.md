@@ -28,7 +28,7 @@
 | disabled       | boolean  | false           | 不可操作                                                                       |
 | beginTime      | number   | 0               | 可选择的起始时间                                                               |
 | endTime        | number   | 24              | 可选择的结束时间                                                               |
-
+| multiple        | boolean   | true              | 支持多选和单选，默认多选                                                               |
 ## License
 
 MIT

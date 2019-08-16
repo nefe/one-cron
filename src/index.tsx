@@ -53,6 +53,8 @@ export class OneCronProps {
   beginTime? = 0;
   /** 结束时间，用于小时选择 */
   endTime? = 24;
+  /** 是否支持多选 */
+  multiple? = true;
 }
 interface OneCronState {
   cron: AllCron;
@@ -61,6 +63,8 @@ interface OneCronState {
   endOpen: boolean;
   timeList: string[];
   weekList: string[];
+  dayList: string[];
+  hourList: string[]
 }
 export default class OneCron extends React.Component<
   OneCronProps,
@@ -78,7 +82,9 @@ export default class OneCron extends React.Component<
       isEmpty: !props.cronExpression,
       endOpen: false,
       timeList: [],
-      weekList: []
+      weekList: [],
+      dayList: [],
+      hourList: []
     };
   }
 
@@ -159,7 +165,8 @@ export default class OneCron extends React.Component<
       showCheckbox,
       disabled,
       beginTime = 0,
-      endTime = 24
+      endTime = 24,
+      multiple
     } = this.props;
     const disabledHours = () => [
       ...getArr(beginTime, 0),
@@ -205,7 +212,7 @@ export default class OneCron extends React.Component<
         }
       };
     };
-
+    
     switch (cron.periodType) {
       case PeriodType.day: {
         if (showCheckbox && !cron.isSchedule) {
@@ -231,14 +238,15 @@ export default class OneCron extends React.Component<
           <span>
             <Select
               disabled={disabled}
-              mode='tags'
+              mode={multiple ? 'tags' : 'default'}
               style={{ width: 200 }}
               {...getCommonProps(cron, "weeks")}
               onChange={(value: string[]) => {
-                cron.weeks = value.sort((a, b) => +a - +b);
+                const weeks = multiple ? value.sort((a, b) => +a - +b) : [].concat(value);
+                cron.weeks = weeks
                 this.triggerChange();
                 this.setState({
-                  weekList: value.sort((a, b) => +a - +b)
+                  weekList: weeks
                 })
               }}
               value={this.state.weekList}
@@ -259,9 +267,18 @@ export default class OneCron extends React.Component<
           <span>
             <Select
               disabled={disabled}
-              mode='tags'
+              mode={multiple ? 'tags' : 'default'}
               style={{ width: 200 }}
               {...getCommonProps(cron, "days")}
+              onChange={(value: string[]) => {
+                const days = multiple ? value.sort((a, b) => +a - +b) : [].concat(value);
+                cron.days = days
+                this.triggerChange();
+                this.setState({
+                  dayList: days
+                })
+              }}
+              value={this.state.dayList}
             >
               {getOptions(getDayItems(lang))}
             </Select>
@@ -400,14 +417,18 @@ export default class OneCron extends React.Component<
               </span>
             ) : (
               <Select
-                mode='tags'
+                mode={multiple ? 'tags' : 'default'}
                 disabled={disabled}
-                value={cron.hours}
                 style={{ width: 200 }}
                 onChange={(value: string[]) => {
-                  cron.hours = value.sort((a, b) => +a - +b);
+                  const hours = multiple ? value.sort((a, b) => +a - +b) : [].concat(value);
+                  cron.hours = hours
                   this.triggerChange();
+                  this.setState({
+                    hourList: hours
+                  })
                 }}
+                value={this.state.hourList}
               >
                 {getOptions(getHourItems(lang, beginTime, endTime))}
               </Select>
