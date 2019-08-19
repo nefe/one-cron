@@ -17,8 +17,6 @@ import {
 } from "./cronUtils";
 import { cronValidate } from "./cronExpValidator";
 import { getI18N, LangEnum } from "./I18N";
-import { get } from "http";
-import moment = require("moment");
 const Option = Select.Option;
 const RadioGroup = Radio.Group;
 
@@ -62,9 +60,6 @@ interface OneCronState {
   isEmpty: boolean;
   endOpen: boolean;
   timeList: string[];
-  weekList: string[];
-  dayList: string[];
-  hourList: string[]
 }
 export default class OneCron extends React.Component<
   OneCronProps,
@@ -82,9 +77,6 @@ export default class OneCron extends React.Component<
       isEmpty: !props.cronExpression,
       endOpen: false,
       timeList: [],
-      weekList: [],
-      dayList: [],
-      hourList: []
     };
   }
 
@@ -212,7 +204,7 @@ export default class OneCron extends React.Component<
         }
       };
     };
-    
+
     switch (cron.periodType) {
       case PeriodType.day: {
         if (showCheckbox && !cron.isSchedule) {
@@ -245,11 +237,8 @@ export default class OneCron extends React.Component<
                 const weeks = multiple ? value.sort((a, b) => +a - +b) : [].concat(value);
                 cron.weeks = weeks
                 this.triggerChange();
-                this.setState({
-                  weekList: weeks
-                })
               }}
-              value={this.state.weekList}
+              value={cron.weeks.filter(item => item !== '*')}
             >
               {getOptions(getWeekItems(lang))}
             </Select>
@@ -274,11 +263,8 @@ export default class OneCron extends React.Component<
                 const days = multiple ? value.sort((a, b) => +a - +b) : [].concat(value);
                 cron.days = days
                 this.triggerChange();
-                this.setState({
-                  dayList: days
-                })
               }}
-              value={this.state.dayList}
+              value={cron.days}
             >
               {getOptions(getDayItems(lang))}
             </Select>
@@ -424,11 +410,9 @@ export default class OneCron extends React.Component<
                   const hours = multiple ? value.sort((a, b) => +a - +b) : [].concat(value);
                   cron.hours = hours
                   this.triggerChange();
-                  this.setState({
-                    hourList: hours
-                  })
+                 
                 }}
-                value={this.state.hourList}
+                value={cron.hours}
               >
                 {getOptions(getHourItems(lang, beginTime, endTime))}
               </Select>

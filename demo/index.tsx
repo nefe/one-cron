@@ -19,7 +19,7 @@ enum LangEnum {
 }
 class App extends React.Component<Prop, State> {
   state: State = {
-    cronExpression: ""
+    cronExpression: "0 0 9 ? * 4"
   };
   handleChange(exp) {
     this.setState({
