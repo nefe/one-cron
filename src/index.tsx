@@ -98,15 +98,11 @@ export default class OneCron extends React.Component<
 
   handleChangePeriodType(periodType: PeriodType) {
     const newCron = Cron.getCronFromPeriodType(periodType);
-
     this.setState(
       {
         cron: Cron.getCronFromPeriodType(periodType),
         cronType: periodType,
         timeList: newCron.getPredictedTimes()
-      },
-      () => {
-        this.props.onChange(this.state.cron);
       }
     );
   }
