@@ -87,7 +87,7 @@ export default class OneCron extends React.Component<
         const cronType = newCron.periodType;
 
         this.setState({
-          cron: newCron,
+          // cron: newCron,
           cronType,
           isEmpty: false,
           timeList: newCron.getPredictedTimes()
@@ -103,6 +103,9 @@ export default class OneCron extends React.Component<
         cron: Cron.getCronFromPeriodType(periodType),
         cronType: periodType,
         timeList: newCron.getPredictedTimes()
+      },
+      () => {
+        this.props.onChange(this.state.cron);
       }
     );
   }
