@@ -81,17 +81,18 @@ export default class OneCron extends React.Component<
   }
 
   componentWillReceiveProps(nextProps: OneCronProps) {
-    if (nextProps.cronExpression !== this.props.cronExpression) {
-      const newCron = Cron.getCronFromExp(nextProps.cronExpression);
-      const cronType = newCron.periodType;
+    if (this.props.cronExpression && nextProps.cronExpression !== this.props.cronExpression) {
+      if (this.state.isEmpty) {
+        const newCron = Cron.getCronFromExp(nextProps.cronExpression);
+        const cronType = newCron.periodType;
 
-      this.setState({
-        cron: newCron,
-        cronType,
-        isEmpty: false,
-        timeList: newCron.getPredictedTimes()
-      });
-      
+        this.setState({
+          cron: newCron,
+          cronType,
+          isEmpty: false,
+          timeList: newCron.getPredictedTimes()
+        });
+      }
     }
   }
 
@@ -104,8 +105,7 @@ export default class OneCron extends React.Component<
         timeList: newCron.getPredictedTimes()
       },
       () => {
-        // cronExpression为空时，不触发改变
-        !this.state.isEmpty && this.props.onChange(this.state.cron);
+        this.props.onChange(this.state.cron);
       }
     );
   }
