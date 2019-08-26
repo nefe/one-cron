@@ -122,7 +122,7 @@ export class Cron {
     }
   }
 
-  static getCronFromExp(cronExp: string,type?:PeriodType) {
+  static getCronFromExp(cronExp: string) {
     if (!cronExp) {
       return new DayCron({});
     }
@@ -141,15 +141,6 @@ export class Cron {
       !hour.includes(",") &&
       !hour.includes("/")
     ) {
-      // 用于初始化
-      if(type === 'month'){
-        return new MonthCron({
-          time: Moment(`${hour}:${minute}`, "HH:mm")
-        });
-      }
-      if(type === 'hour'){
-        return new HourCron({ hours: [] });
-      }
       return new DayCron({
         time: Moment(`${hour}:${minute}`, "HH:mm"),
         isSchedule: hour !== "0" || minute !== "0"
