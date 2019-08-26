@@ -1,7 +1,7 @@
-import * as React from "react";
-import * as ReactDOM from "react-dom";
-import OneCron, { cronValidate } from "../src";
-import "./index.css";
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+import OneCron, { cronValidate } from '../src';
+import './index.css';
 
 type State = {
   cronExpression: string;
@@ -13,13 +13,13 @@ type Prop = {
   cronExpression?: string;
 };
 enum LangEnum {
-  zh_CN = "zh_CN",
-  en_US = "en_US",
-  zh_TW = "zh_TW"
+  zh_CN = 'zh_CN',
+  en_US = 'en_US',
+  zh_TW = 'zh_TW'
 }
 class App extends React.Component<Prop, State> {
   state: State = {
-    cronExpression: ""
+    cronExpression: '0 0 1 * * ?'
   };
   handleChange(exp) {
     this.setState({
@@ -28,7 +28,7 @@ class App extends React.Component<Prop, State> {
     console.log(exp, exp.format(), exp.getPredictedTimes());
   }
   componentDidMount() {
-    console.log(cronValidate("0 0 7-14/1 * * ?"));
+    console.log(cronValidate('0 0 7-14/1 * * ?'));
   }
   render() {
     return (
@@ -41,15 +41,20 @@ class App extends React.Component<Prop, State> {
           showRecentTime={true}
           beginTime={8}
           endTime={18}
+          options={['month', 'week', 'day']}
         />
-        <button onClick={()=>{
-          this.setState({
-            cronExpression:"0 0 7-14/1 * * ?"
-          })
-        }}>改变</button>
+        <button
+          onClick={() => {
+            this.setState({
+              cronExpression: '0 0 7-14/1 * * ?'
+            });
+          }}
+        >
+          改变
+        </button>
       </div>
     );
   }
 }
 
-ReactDOM.render(<App />, document.getElementById("app"));
+ReactDOM.render(<App />, document.getElementById('app'));
