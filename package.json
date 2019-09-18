@@ -1,6 +1,6 @@
 {
   "name": "one-cron",
-  "version": "0.2.32",
+  "version": "0.3.0",
   "description": "A Cron Expression Component Based React and Ant Design",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -17,6 +17,10 @@
       "tsx",
       "js"
     ],
+    "moduleNameMapper": {
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/__mocks__/fileMock.js",
+      "\\.(css|less)$": "identity-obj-proxy"
+    },
     "transform": {
       "^.+\\.(ts|tsx)$": "ts-jest"
     },
@@ -56,18 +60,19 @@
     "css-loader": "^0.28.0",
     "enzyme": "^3.3.0",
     "enzyme-adapter-react-16": "^1.1.1",
+    "identity-obj-proxy": "^3.0.0",
     "jest": "^23.1.0",
     "jest-cli": "^23.1.0",
     "jest-config": "^23.1.0",
+    "lodash": "~4.17.4",
+    "moment": "^2.22.1",
+    "react": "~16.2.0",
+    "react-dom": "~16.2.0",
     "style-loader": "^0.16.1",
     "ts-jest": "^22.4.6",
     "typescript": "^2.2.2",
     "webpack": "^2.4.1",
-    "webpack-dev-server": "^2.4.2",
-    "lodash": "~4.17.4",
-    "moment": "^2.22.1",
-    "react": "~16.2.0",
-    "react-dom": "~16.2.0"
+    "webpack-dev-server": "^2.4.2"
   },
   "peerDependencies": {
     "antd": "~3.1.3",
