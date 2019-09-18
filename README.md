@@ -29,6 +29,9 @@
 | beginTime      | number   | 0               | 可选择的起始时间                                                               |
 | endTime        | number   | 24              | 可选择的结束时间                                                               |
 | multiple        | boolean   | true              | 支持多选和单选，默认多选                                                               |
+| onValidate        | Function   |               | 校验选择“周”和“月”时，是否未填写。 该回调函数返回布尔值，True表示未填写。    |
+| errorMessage        | string   |               |  校验错误的提示语  |
+
 ## License
 
 MIT
