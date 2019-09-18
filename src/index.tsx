@@ -2,6 +2,7 @@ import * as React from "react";
 import { Select, Checkbox, TimePicker, Radio } from "antd";
 import * as Moment from "moment";
 import { getArr } from "./I18N";
+import './index.css';
 
 import {
   Cron,
@@ -41,6 +42,8 @@ export * from "./cronUtils";
 export class OneCronProps {
   cronExpression?: string;
   onChange? = (exp: AllCron) => {};
+  /** 校验 */
+  onValidate? = (error: boolean) => {};
   lang? = LangEnum.en_US;
   showCheckbox? = false;
   disabled? = false;
@@ -53,6 +56,8 @@ export class OneCronProps {
   endTime? = 24;
   /** 是否支持多选 */
   multiple? = true;
+  /** 错误信息 */
+  errorMessage? = ''
 }
 interface OneCronState {
   cron: AllCron;
@@ -60,6 +65,7 @@ interface OneCronState {
   isEmpty: boolean;
   endOpen: boolean;
   timeList: string[];
+  isError: boolean;
 }
 export default class OneCron extends React.Component<
   OneCronProps,
@@ -77,6 +83,7 @@ export default class OneCron extends React.Component<
       isEmpty: !props.cronExpression,
       endOpen: false,
       timeList: [],
+      isError: false
     };
   }
 
@@ -104,9 +111,36 @@ export default class OneCron extends React.Component<
         timeList: newCron.getPredictedTimes()
       },
       () => {
+        this.triggerValidate(newCron);
         this.props.onChange(this.state.cron);
       }
     );
+  }
+
+  onValidate(isError:boolean){
+    this.setState({
+      isError
+    })
+    this.props.onValidate && this.props.onValidate(isError)
+  }
+
+  // 校验某些选择项是否有填，当前只对week,month类型进行判断
+  triggerValidate(cron){
+    if(cron.periodType === 'week') {
+      if(cron.weeks.length === 0){
+        this.onValidate(true)
+      }else {
+        this.onValidate(false)
+      }
+    }else if(cron.periodType === 'month'){
+      if(cron.days.length === 0){
+        this.onValidate(true);
+      }else {
+        this.onValidate(false)
+      }
+    } else {
+      this.onValidate(false)
+    }
   }
 
   triggerChange() {
@@ -115,6 +149,7 @@ export default class OneCron extends React.Component<
       timeList
     });
     this.props.onChange(this.state.cron);
+    this.triggerValidate(this.state.cron);
     this.forceUpdate();
   }
 
@@ -226,20 +261,25 @@ export default class OneCron extends React.Component<
       case PeriodType.week: {
         return (
           <span>
-            <Select
-              disabled={disabled}
-              mode={multiple ? 'tags' : 'default'}
-              style={{ width: 200 }}
-              {...getCommonProps(cron, "weeks")}
-              onChange={(value: string[]) => {
-                const weeks = multiple ? value.sort((a, b) => +a - +b) : [].concat(value);
-                cron.weeks = weeks
-                this.triggerChange();
-              }}
-              value={cron.weeks.filter(item => item !== '*')}
-            >
-              {getOptions(getWeekItems(lang))}
-            </Select>
+            <span className="cron-select-wrapper">
+              <Select
+                className={this.state.isError ? "cron-select-error" :"cron-select"}
+                disabled={disabled}
+                mode={multiple ? 'tags' : 'default'}
+                style={{ width: 200, borde: '1px solid red' }}
+                {...getCommonProps(cron, "weeks")}
+                onChange={(value: string[]) => {
+                  const weeks = multiple ? value.sort((a, b) => +a - +b) : [].concat(value);
+                  cron.weeks = weeks
+                  this.triggerChange();
+                }}
+                value={cron.weeks.filter(item => item !== '*')}
+              >
+                {getOptions(getWeekItems(lang))}
+              </Select>
+              {this.state.isError && this.props.errorMessage && <div className="cron-select-errorMessage">{this.props.errorMessage}</div>}
+            </span> 
+            
             <TimePicker
               disabledHours={disabledHours}
               format='HH:mm'
@@ -252,20 +292,24 @@ export default class OneCron extends React.Component<
       case PeriodType.month: {
         return (
           <span>
-            <Select
-              disabled={disabled}
-              mode={multiple ? 'tags' : 'default'}
-              style={{ width: 200 }}
-              {...getCommonProps(cron, "days")}
-              onChange={(value: string[]) => {
-                const days = multiple ? value.sort((a, b) => +a - +b) : [].concat(value);
-                cron.days = days
-                this.triggerChange();
-              }}
-              value={cron.days}
-            >
-              {getOptions(getDayItems(lang))}
-            </Select>
+            <span className="cron-select-wrapper">
+              <Select
+                className={this.state.isError ? "cron-select-error" :"cron-select"}
+                disabled={disabled}
+                mode={multiple ? 'tags' : 'default'}
+                style={{ width: 200 }}
+                {...getCommonProps(cron, "days")}
+                onChange={(value: string[]) => {
+                  const days = multiple ? value.sort((a, b) => +a - +b) : [].concat(value);
+                  cron.days = days
+                  this.triggerChange();
+                }}
+                value={cron.days}
+              >
+                {getOptions(getDayItems(lang))}
+              </Select>
+              {this.state.isError && this.props.errorMessage && <div className="cron-select-errorMessage">{this.props.errorMessage}</div>}
+            </span>
             <TimePicker
               disabledHours={disabledHours}
               format='HH:mm'
