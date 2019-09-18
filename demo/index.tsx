@@ -30,6 +30,9 @@ class App extends React.Component<Prop, State> {
   componentDidMount() {
     console.log(cronValidate('0 0 7-14/1 * * ?'));
   }
+  onValidate(error){
+    console.log('error',error)
+  }
   render() {
     return (
       <div style={{ margin: 50 }}>
@@ -41,7 +44,8 @@ class App extends React.Component<Prop, State> {
           showRecentTime={true}
           beginTime={8}
           endTime={18}
-          options={['month', 'week', 'day']}
+          onValidate={this.onValidate}
+          errorMessage={'错误信息'}
         />
         <button
           onClick={() => {

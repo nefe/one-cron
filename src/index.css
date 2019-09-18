@@ -1,0 +1,13 @@
+.cron-select-wrapper {
+  position: relative;
+}
+
+.cron-select-wrapper .cron-select-error .ant-select-selection {
+  border-color: #f5222d;
+}
+.cron-select-wrapper .cron-select-errorMessage {
+  position: absolute;
+  top:28px;
+  left:0px;
+  color: #f5222d;
+}
