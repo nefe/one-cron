@@ -124,7 +124,7 @@ export default class OneCron extends React.Component<
     this.props.onValidate && this.props.onValidate(isError)
   }
 
-  // 校验某些选择项是否有填，当前只对week,month类型进行判断
+  // 校验某些选择项是否有填，当前只对week,month,hour类型进行判断
   triggerValidate(cron){
     if(cron.periodType === 'week') {
       if(cron.weeks.length === 0){
@@ -134,6 +134,12 @@ export default class OneCron extends React.Component<
       }
     }else if(cron.periodType === 'month'){
       if(cron.days.length === 0){
+        this.onValidate(true);
+      }else {
+        this.onValidate(false)
+      }
+    } else if (cron.periodType === 'hour') {
+      if(cron.hours.length === 0 && cron.hasInterval === false) {
         this.onValidate(true);
       }else {
         this.onValidate(false)
@@ -444,7 +450,10 @@ export default class OneCron extends React.Component<
                 </span>
               </span>
             ) : (
+              <span className="cron-select-wrapper">
+
               <Select
+                className={this.state.isError ? "cron-select-error" :"cron-select"}
                 mode={multiple ? 'tags' : 'default'}
                 disabled={disabled}
                 style={{ width: 200 }}
@@ -458,6 +467,8 @@ export default class OneCron extends React.Component<
               >
                 {getOptions(getHourItems(lang, beginTime, endTime))}
               </Select>
+              {this.state.isError && this.props.errorMessage && <div className="cron-select-errorMessage">{this.props.errorMessage}</div>}
+            </span> 
             )}
           </span>
         );
