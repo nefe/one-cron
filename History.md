@@ -1,3 +1,7 @@
+# 0.3.3 / 2019-11-07
+
+- fix getArr count problem
+
 # 0.3.2 / 2019-11-07
 
 - onClear bugfix
