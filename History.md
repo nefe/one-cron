@@ -1,3 +1,7 @@
+# 0.3.2 / 2019-11-07
+
+- onClear bugfix
+
 # 0.2.19 / 2019-08-01
 
 - delete default value and bugfix
