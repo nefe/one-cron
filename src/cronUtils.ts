@@ -1,9 +1,7 @@
 import * as Moment from "moment";
 import * as _ from "lodash";
-import * as React from "react";
 import { getI18N, getArr, LangEnum } from "./I18N";
 import { cronValidate } from "./cronExpValidator";
-import moment = require("moment");
 
 export function isStrNum(str: string) {
   return !Number.isNaN(Number(str));
@@ -134,7 +132,6 @@ export class Cron {
     const [second, minute = "", hour = "", day, month, week] = cronExp.split(
       " "
     );
-
     if (
       day === "*" &&
       !minute.includes("/") &&
@@ -223,7 +220,9 @@ export class DayCron extends Cron {
 
   format() {
     const time = this.time;
-
+    if(!Moment(time).isValid()) {
+      return;
+    }
     return `0 ${time.minutes()} ${time.hours()} * * ?`;
   }
 
@@ -241,10 +240,13 @@ class MonthCron extends Cron {
 
   format() {
     const { days, time } = this;
-
-    return `0 ${time.minutes()} ${time.hours()} ${
-      days.length > 0 ? days.join(",") : "*"
-    } * ?`;
+    if(Moment(time).isValid() && days){
+      return `0 ${time.minutes()} ${time.hours()} ${
+        days.length > 0 ? days.join(",") : "*"
+      } * ?`;
+    }else {
+      return;
+    }
   }
 
   // 计算预测时间
@@ -323,9 +325,13 @@ class WeekCron extends Cron {
 
   format() {
     const { weeks, time } = this;
-    return `0 ${time.minutes()} ${time.hours()} ? * ${
-      weeks.length > 0 ? weeks.join(",") : "*"
-    }`;
+    if(Moment(time).isValid() && weeks){
+      return `0 ${time.minutes()} ${time.hours()} ? * ${
+        weeks.length > 0 ? weeks.join(",") : "*"
+      }`;
+    }else {
+      return;
+    }
   }
 
   generatePredictedTime(times = 5, format = DEFAULT_FORMAT): string[] {
@@ -406,10 +412,16 @@ class HourCron extends Cron {
 
   format() {
     const { hasInterval, beginTime, endTime, hours, stepHour } = this;
-    if (hasInterval) {
-      return `0 ${beginTime.minutes()} ${beginTime.hours()}-${endTime.hours()}/${stepHour} * * ?`;
-    } else {
-      return `0 0 ${hours.length > 0 ? hours.join(",") : "*"} * * ?`;
+    const isValid = Moment(beginTime).isValid() && Moment(endTime).isValid();
+
+    if(isValid) {
+      if (hasInterval) {
+        return `0 ${beginTime.minutes()} ${beginTime.hours()}-${endTime.hours()}/${stepHour} * * ?`;
+      } else {
+        return `0 0 ${hours.length > 0 ? hours.join(",") : "*"} * * ?`;
+      }
+    }else {
+      return;
     }
   }
 
@@ -417,27 +429,30 @@ class HourCron extends Cron {
   getPredictedTimes(times = 5, format = DEFAULT_FORMAT): string[] {
     const { hasInterval, beginTime, endTime, hours, stepHour } = this;
     let predictedTimes = [];
-
+    // 判断开始/结束时间是否有效
+    const isValid = Moment(beginTime).isValid() && Moment(endTime).isValid();
     if (hasInterval) {
-      const minDiff = getMins(endTime) - getMins(beginTime);
-      if (minDiff <= +stepHour * 60) {
-        predictedTimes = [Moment(beginTime).format(format)];
-      } else {
-        // 结束时间减去开始时间/间隔，然后slice(0,times)
-        const count = minDiff / (+stepHour * 60);
-        predictedTimes = getArr(count)
-          .slice(0, times)
-          .map(
-            (item, index) =>
-              `${Moment(beginTime)
-                .add(+stepHour * index, "hours")
-                .format(format)}`
-          );
+      if(isValid) {
+        const minDiff = getMins(endTime) - getMins(beginTime);
+        if (minDiff <= +stepHour * 60) {
+          predictedTimes = [Moment(beginTime).format(format)];
+        } else {
+          // 结束时间减去开始时间/间隔，然后slice(0,times)
+          const count = minDiff / (+stepHour * 60);
+          predictedTimes = typeof count === 'number' && getArr(count)
+            .slice(0, times)
+            .map(
+              (item, index) =>
+                `${Moment(beginTime)
+                  .add(+stepHour * index, "hours")
+                  .format(format)}`
+            );
+        }
       }
     } else {
       predictedTimes = hours
         .slice(0, times)
-        .map(hour => `${moment(hour, "HH").format(format)}`);
+        .map(hour => `${Moment(hour, "HH").format(format)}`);
     }
 
     return predictedTimes;
@@ -461,28 +476,37 @@ class MinuteCron extends Cron {
     const { beginTime, endTime, stepMinute } = this;
     let predictedTimes = [];
     const timeDiff = getMins(endTime) - getMins(beginTime);
-    if (timeDiff <= +stepMinute) {
-      // 判断开始结束时间是否大于间隔时间，否则返回开始时间
-      predictedTimes = [Moment(beginTime).format(format)];
-    } else {
-      // 结束时间减去开始时间/间隔，然后slice(0,times)
-      const count = timeDiff / +stepMinute;
-      predictedTimes = getArr(count)
-        .slice(0, times)
-        .map(
-          (item, index) =>
-            `${Moment(beginTime)
-              .add(+stepMinute * index, "minutes")
-              .format(format)}`
-        );
+    const isValid = Moment(beginTime).isValid() && Moment(endTime).isValid();
+    if (isValid) {
+      if (timeDiff <= +stepMinute) {
+        // 判断开始结束时间是否大于间隔时间，否则返回开始时间
+        predictedTimes = [Moment(beginTime).format(format)];
+      } else {
+        // 结束时间减去开始时间/间隔，然后slice(0,times)
+        const count = timeDiff / +stepMinute;
+        predictedTimes = getArr(count)
+          .slice(0, times)
+          .map(
+            (item, index) =>
+              `${Moment(beginTime)
+                .add(+stepMinute * index, "minutes")
+                .format(format)}`
+          );
+      }
     }
+    
     return predictedTimes;
   }
 
   format() {
     const { beginTime, endTime, stepMinute } = this;
 
-    return `0 */${stepMinute} ${beginTime.hours()}-${endTime.hours()} * * ?`;
+    const isValid = Moment(beginTime).isValid() && Moment(endTime).isValid();
+    if(isValid) {
+      return `0 */${stepMinute} ${beginTime.hours()}-${endTime.hours()} * * ?`;
+    }else {
+      return;
+    }
   }
 
   constructor(cron: Partial<MinuteCron>) {
