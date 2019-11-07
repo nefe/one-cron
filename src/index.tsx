@@ -210,22 +210,18 @@ export default class OneCron extends React.Component<
       cronType?: PeriodType
     ) => {
       // 数据订正
-      if (cronType === PeriodType.minute) {
+      const isValid = Moment(cronBO[key]).isValid();
+      if (cronType === PeriodType.minute || cronType === PeriodType.hour) {
         if (key === "endTime") {
-          cronBO[key] = Moment(cronBO[key], "HH:mm").minute(59) as any;
+          cronBO[key] = isValid ? Moment(cronBO[key], "HH:mm").minute(59) as any : null;
         } else if (key === "beginTime") {
-          cronBO[key] = Moment(cronBO[key], "HH:mm").minute(0) as any;
-        }
-      } else if (cronType === PeriodType.hour) {
-        if (key === "endTime") {
-          cronBO[key] = Moment(cronBO[key], "HH:mm").minute(59) as any;
+          cronBO[key] = isValid ? Moment(cronBO[key], "HH:mm").minute(0) as any : null;
         }
       }
       return {
         value: cronBO[key],
         onChange: value => {
           cronBO[key] = value;
-
           // 数据订正
           if (cronType === PeriodType.minute) {
             if (key === "endTime") {
