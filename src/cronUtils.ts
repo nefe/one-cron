@@ -438,7 +438,7 @@ class HourCron extends Cron {
           predictedTimes = [Moment(beginTime).format(format)];
         } else {
           // 结束时间减去开始时间/间隔，然后slice(0,times)
-          const count = minDiff / (+stepHour * 60);
+          const count = Math.ceil(minDiff / (+stepHour * 60));
           predictedTimes = typeof count === 'number' && getArr(count)
             .slice(0, times)
             .map(
@@ -483,7 +483,7 @@ class MinuteCron extends Cron {
         predictedTimes = [Moment(beginTime).format(format)];
       } else {
         // 结束时间减去开始时间/间隔，然后slice(0,times)
-        const count = timeDiff / +stepMinute;
+        const count = Math.ceil(timeDiff / +stepMinute);
         predictedTimes = getArr(count)
           .slice(0, times)
           .map(

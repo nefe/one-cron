@@ -5,11 +5,15 @@
  */
 
 function getArr(length: number, beginNum = 0, arr = []): number[] {
+  if(Number.isNaN(length)) {
+    return []
+  }
   if (length <= 0) {
     return arr;
   }
 
   return getArr(length - 1, beginNum + 1, [...arr, beginNum]);
+  
 }
 
 export enum LangEnum {
