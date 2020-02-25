@@ -212,11 +212,15 @@ export default class OneCron extends React.Component<
       // 数据订正
       const isValid = Moment(cronBO[key]).isValid();
       if(isValid) {
-        if (cronType === PeriodType.minute || cronType === PeriodType.hour) {
+        if (cronType === PeriodType.minute) {
           if (key === "endTime") {
-            cronBO[key] = isValid ? Moment(cronBO[key], "HH:mm").minute(59) as any : null;
+            cronBO[key] = Moment(cronBO[key], "HH:mm").minute(59) as any;
           } else if (key === "beginTime") {
-            cronBO[key] = isValid ? Moment(cronBO[key], "HH:mm").minute(0) as any : null;
+            cronBO[key] = Moment(cronBO[key], "HH:mm").minute(0) as any;
+          }
+        } else if (cronType === PeriodType.hour) {
+          if (key === "endTime") {
+            cronBO[key] = Moment(cronBO[key], "HH:mm").minute(59) as any;
           }
         }
       }
@@ -228,11 +232,15 @@ export default class OneCron extends React.Component<
           // 数据订正
           const isValid = Moment(cronBO[key]).isValid();
           if(isValid) {
-            if (cronType === PeriodType.minute || cronType === PeriodType.hour) {
+            if (cronType === PeriodType.minute) {
               if (key === "endTime") {
-                cronBO[key] = isValid ? Moment(cronBO[key], "HH:mm").minute(59) as any : null;
+                cronBO[key] = Moment(cronBO[key], "HH:mm").minute(59);
               } else if (key === "beginTime") {
-                cronBO[key] = isValid ? Moment(cronBO[key], "HH:mm").minute(0) as any : null;
+                cronBO[key] = Moment(cronBO[key], "HH:mm").minute(0);
+              }
+            } else if (cronType === PeriodType.hour) {
+              if (key === "endTime") {
+                cronBO[key] = Moment(cronBO[key], "HH:mm").minute(59);
               }
             }
           }
