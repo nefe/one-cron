@@ -214,9 +214,9 @@ export default class OneCron extends React.Component<
       if(isValid) {
         if (cronType === PeriodType.minute) {
           if (key === "endTime") {
-            cronBO[key] = isValid ? Moment(cronBO[key], "HH:mm").minute(59) as any : null;
+            cronBO[key] = isValid ? Moment(cronBO[key], "HH:mm") as any : null;
           } else if (key === "beginTime") {
-            cronBO[key] = isValid ? Moment(cronBO[key], "HH:mm").minute(0) as any : null;
+            cronBO[key] = isValid ? Moment(cronBO[key], "HH:mm") as any : null;
           }
         } else if (cronType === PeriodType.hour) {
           if (key === "endTime") {
@@ -234,17 +234,16 @@ export default class OneCron extends React.Component<
           if(isValid) {
             if (cronType === PeriodType.minute) {
               if (key === "endTime") {
-                cronBO[key] = isValid ? Moment(cronBO[key], "HH:mm").minute(59) as any : null;
+                cronBO[key] = isValid ? Moment(cronBO[key], "HH:mm") as any : null;
               } else if (key === "beginTime") {
-                cronBO[key] = isValid ? Moment(cronBO[key], "HH:mm").minute(0) as any : null;
+                cronBO[key] = isValid ? Moment(cronBO[key], "HH:mm") as any : null;
               }
             } else if (cronType === PeriodType.hour) {
               if (key === "endTime") {
-                cronBO[key] = isValid?Moment(cronBO[key], "HH:mm").minute(59) as any :null;
+                cronBO[key] = isValid ? Moment(cronBO[key], "HH:mm").minute(59) as any :null;
               } 
             }
           }
-
           this.triggerChange();
         }
       };
@@ -350,7 +349,7 @@ export default class OneCron extends React.Component<
                   endTime,
                   "end"
                 )}
-                disabledMinutes={() => getArr(59, 1)}
+                // disabledMinutes={() => getArr(59, 1)}
                 format='HH:mm'
                 onOpenChange={this.handleStartOpenChange}
                 {...getCommonProps(cron, "beginTime", PeriodType.minute)}
@@ -379,7 +378,7 @@ export default class OneCron extends React.Component<
                   endTime,
                   "start"
                 )}
-                disabledMinutes={() => getArr(59, 0)}
+                // disabledMinutes={() => getArr(59, 0)}
                 open={endOpen}
                 onOpenChange={this.handleEndOpenChange}
               />
