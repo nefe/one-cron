@@ -503,7 +503,7 @@ class MinuteCron extends Cron {
 
     const isValid = Moment(beginTime).isValid() && Moment(endTime).isValid();
     if(isValid) {
-      return `0 */${stepMinute} ${beginTime.hours()}-${endTime.hours()} * * ?`;
+      return `0 ${beginTime.minutes()}/${stepMinute} ${beginTime.hours()}-${endTime.hours()} * * ?`;
     }else {
       return;
     }
