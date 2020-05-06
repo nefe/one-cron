@@ -346,7 +346,7 @@ class WeekCron extends Cron {
       .slice(0, times)
       .map((child, index) => {
         // child为1时表示为周日
-        const diff = child === 1 ? 7 - curretWeek : child - curretWeek - 1;
+        const diff = Number(child) === 1 ? 7 - curretWeek : Number(child) - curretWeek - 1;
         if (diff === 0) {
           const isBefore = Moment().isBefore(time);
           return Moment(time)
@@ -355,7 +355,7 @@ class WeekCron extends Cron {
         } else {
           return Moment(time)
             .add(diff >= 0 ? 0 : 1, "weeks")
-            .add(`${Math.abs(diff)}`, "days")
+            .add(`${diff}`, "days")
             .format(format);
         }
       })
