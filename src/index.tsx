@@ -499,7 +499,6 @@ export default class OneCron extends React.Component<
     const { cron } = this.state;
     const typeCx = cron.periodType;
     const isValidate = cronValidate(cronExpression);
-    console.log('timeList',this.state.timeList)
     return (
       <span className={`schedule-period ${typeCx}`}>
         <Select
