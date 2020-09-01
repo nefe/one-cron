@@ -32,3 +32,23 @@ it("renders the correct text when showRecentTime is true", () => {
     "Recently generated time"
   );
 });
+
+it("dayOfWeekOneBased prop is true by default", () => {
+  const cronExpression = '0 0 2 ? * 1,7';
+  const cronOne = Enzyme.render(
+    <OneCron cronExpression={cronExpression} />
+  );
+  expect(cronOne.find(".errorCronExp").length).toBe(0);
+  // 应该选中周日和周六
+  expect(cronOne.find('.schedule-period.week .cron-select-wrapper .ant-select-selection__choice__content').text()).toBe('SunSat');
+});
+
+it("dayOfWeekOneBased prop is false", () => {
+  const cronExpression = '0 0 2 ? * 0,6';
+  const cronOne = Enzyme.render(
+    <OneCron cronExpression={cronExpression} dayOfWeekOneBased={false} />
+  );
+  expect(cronOne.find(".errorCronExp").length).toBe(0);
+  // 应该选中周日和周六
+  expect(cronOne.find('.schedule-period.week .cron-select-wrapper .ant-select-selection__choice__content').text()).toBe('SunSat');
+});
