@@ -1,10 +1,12 @@
+import * as _ from "lodash";
+
 /**
  * Validates a cron expression.
  *
  * @param cronExpression The expression to validate
  * @return True is expression is valid
  */
-export function cronValidate(cronExpression: string) {
+export function cronValidate(cronExpression: string, dayOfWeekOneBased: boolean = true) {
   var cronParams = cronExpression ? cronExpression.split(" ") : "";
 
   if (cronParams.length < 6 || cronParams.length > 7) {
@@ -38,7 +40,7 @@ export function cronValidate(cronExpression: string) {
     }
 
     //Check day-of-week param
-    if (!checkDayOfWeekField(cronParams[5])) {
+    if (!checkDayOfWeekField(cronParams[5], dayOfWeekOneBased)) {
       return false;
     }
 
@@ -162,27 +164,27 @@ function checkMonthsField(monthsField: string) {
   return checkField(monthsField, 1, 31);
 }
 
-function checkDayOfWeekField(dayOfWeekField: string) {
-  dayOfWeekField.replace("SUN", "1");
-  dayOfWeekField.replace("MON", "2");
-  dayOfWeekField.replace("TUE", "3");
-  dayOfWeekField.replace("WED", "4");
-  dayOfWeekField.replace("THU", "5");
-  dayOfWeekField.replace("FRI", "6");
-  dayOfWeekField.replace("SAT", "7");
+const DAYS_OF_WEEK = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+
+function checkDayOfWeekField(dayOfWeekField: string, dayOfWeekOneBased: boolean = true) {
+  _.forEach(DAYS_OF_WEEK, (text: string, index: number) => {
+    const value = dayOfWeekOneBased ? index + 1 : index;
+    dayOfWeekField.replace(text, `${value}`);
+  });
 
   if (dayOfWeekField == "?") {
     return true;
   }
 
+  const [min, max] = dayOfWeekOneBased ? [1, 7] : [0, 6];
   if (dayOfWeekField.indexOf("L") >= 0) {
-    return checkFieldWithLetter(dayOfWeekField, "L", 1, 7, -1, -1);
+    return checkFieldWithLetter(dayOfWeekField, "L", min, max, -1, -1);
   } else if (dayOfWeekField.indexOf("C") >= 0) {
-    return checkFieldWithLetter(dayOfWeekField, "C", 1, 7, -1, -1);
+    return checkFieldWithLetter(dayOfWeekField, "C", min, max, -1, -1);
   } else if (dayOfWeekField.indexOf("#") >= 0) {
-    return checkFieldWithLetter(dayOfWeekField, "#", 1, 7, 1, 5);
+    return checkFieldWithLetter(dayOfWeekField, "#", min, max, 1, 5);
   } else {
-    return checkField(dayOfWeekField, 1, 7);
+    return checkField(dayOfWeekField, min, max);
   }
 }
 
