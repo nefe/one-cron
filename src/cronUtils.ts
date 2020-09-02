@@ -455,13 +455,13 @@ class HourCron extends Cron {
           // 结束时间减去开始时间/间隔，然后slice(0,times)
           const count = Math.ceil(minDiff / (+stepHour * 60));
           predictedTimes = typeof count === 'number' && getArr(count)
-              .slice(0, times)
-              .map(
-                (item, index) =>
-                  `${Moment(beginTime)
-                    .add(+stepHour * index, "hours")
-                    .format(format)}`
-              );
+            .slice(0, times)
+            .map(
+              (item, index) =>
+                `${Moment(beginTime)
+                  .add(+stepHour * index, "hours")
+                  .format(format)}`
+            );
         }
       }
     } else {

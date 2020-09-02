@@ -169,7 +169,7 @@ const DAYS_OF_WEEK = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 function checkDayOfWeekField(dayOfWeekField: string, dayOfWeekOneBased: boolean = true) {
   _.forEach(DAYS_OF_WEEK, (text: string, index: number) => {
     const value = dayOfWeekOneBased ? index + 1 : index;
-    dayOfWeekField.replace(text, `${value}`);
+    dayOfWeekField = dayOfWeekField.replace(text, `${value}`);
   });
 
   if (dayOfWeekField == "?") {
