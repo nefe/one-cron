@@ -57,7 +57,9 @@ export class OneCronProps {
   /** 是否支持多选 */
   multiple? = true;
   /** 错误信息 */
-  errorMessage? = ''
+  errorMessage? = '';
+  /** day of week是否从1开始。如果为true时，周日至周六对应1~7；否则从0开始，周日至周六对应0~6 */
+  dayOfWeekOneBased = true;
 }
 interface OneCronState {
   cron: AllCron;
@@ -75,7 +77,7 @@ export default class OneCron extends React.Component<
 
   constructor(props: OneCronProps) {
     super(props);
-    const cron = Cron.getCronFromExp(props.cronExpression);
+    const cron = Cron.getCronFromExp(props.cronExpression, props.dayOfWeekOneBased);
 
     this.state = {
       cron,
@@ -90,7 +92,7 @@ export default class OneCron extends React.Component<
   componentWillReceiveProps(nextProps: OneCronProps) {
     if (nextProps.cronExpression !== this.props.cronExpression) {
       if (this.state.isEmpty) {
-        const newCron = Cron.getCronFromExp(nextProps.cronExpression);
+        const newCron = Cron.getCronFromExp(nextProps.cronExpression, nextProps.dayOfWeekOneBased);
         const cronType =  newCron.periodType;
         this.setState({
           cron: newCron,
@@ -103,7 +105,7 @@ export default class OneCron extends React.Component<
   }
 
   handleChangePeriodType(periodType: PeriodType) {
-    const newCron = Cron.getCronFromPeriodType(periodType);
+    const newCron = Cron.getCronFromPeriodType(periodType, this.props.dayOfWeekOneBased);
     this.setState(
       {
         cron: newCron,
@@ -197,7 +199,8 @@ export default class OneCron extends React.Component<
       disabled,
       beginTime = 0,
       endTime = 24,
-      multiple
+      multiple,
+      dayOfWeekOneBased,
     } = this.props;
     const disabledHours = () => [
       ...getArr(beginTime, 0),
@@ -286,7 +289,7 @@ export default class OneCron extends React.Component<
                 }}
                 value={cron.weeks.filter(item => item !== '*')}
               >
-                {getOptions(getWeekItems(lang))}
+                {getOptions(getWeekItems(lang, dayOfWeekOneBased))}
               </Select>
               {this.state.isError && this.props.errorMessage && <div className="cron-select-errorMessage">{this.props.errorMessage}</div>}
             </span> 
@@ -493,12 +496,13 @@ export default class OneCron extends React.Component<
       showCheckbox,
       disabled,
       showRecentTime,
-      options
+      options,
+      dayOfWeekOneBased,
     } = this.props;
     const I18N = getI18N(lang);
     const { cron } = this.state;
     const typeCx = cron.periodType;
-    const isValidate = cronValidate(cronExpression);
+    const isValidate = cronValidate(cronExpression, dayOfWeekOneBased);
     return (
       <span className={`schedule-period ${typeCx}`}>
         <Select
