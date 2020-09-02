@@ -47,13 +47,13 @@ export const getDayItems = (lang: LangEnum) => {
   });
 };
 
-export const getWeekItems = (lang: LangEnum) => {
+export const getWeekItems = (lang: LangEnum, dayOfWeekOneBased: boolean = true) => {
   const I18N = getI18N(lang);
   const weekItemsList = I18N["weekItemsList"];
   return weekItemsList.map((day, dayIndex) => {
     return {
       text: day,
-      value: dayIndex + 1 + ""
+      value: dayIndex + (dayOfWeekOneBased ? 1 : 0) + "",
     };
   });
 };
@@ -104,11 +104,11 @@ export class Cron {
     });
   }
 
-  static getCronFromPeriodType(periodType: PeriodType) {
+  static getCronFromPeriodType(periodType: PeriodType, dayOfWeekOneBased: boolean = true) {
     if (periodType === PeriodType.day) {
       return new DayCron({});
     } else if (periodType === PeriodType.week) {
-      return new WeekCron({});
+      return new WeekCron({ dayOfWeekOneBased });
     } else if (periodType === PeriodType.month) {
       return new MonthCron({});
     } else if (periodType === PeriodType.hour) {
@@ -120,12 +120,12 @@ export class Cron {
     }
   }
 
-  static getCronFromExp(cronExp: string) {
+  static getCronFromExp(cronExp: string, dayOfWeekOneBased: boolean = true) {
     if (!cronExp) {
       return new DayCron({});
     }
     // 验证cronExp正确性
-    if (!cronValidate(cronExp)) {
+    if (!cronValidate(cronExp, dayOfWeekOneBased)) {
       return new DayCron({});
     }
 
@@ -145,7 +145,8 @@ export class Cron {
     } else if (day === "?") {
       return new WeekCron({
         time: Moment(`${hour}:${minute}`, "HH:mm"),
-        weeks: week.split(",")
+        weeks: week.split(","),
+        dayOfWeekOneBased
       });
     } else if (day !== "*" && isStrNum(hour)) {
       // 每月多少号
@@ -322,6 +323,8 @@ class WeekCron extends Cron {
 
   weeks = [] as string[];
   time = Moment("00:00", "HH:mm");
+  // day of week是否从1开始。如果为true时，周日至周六对应1~7；否则从0开始，周日至周六对应0~6
+  dayOfWeekOneBased = true;
 
   format() {
     const { weeks, time } = this;
@@ -335,7 +338,7 @@ class WeekCron extends Cron {
   }
 
   generatePredictedTime(times = 5, format = DEFAULT_FORMAT): string[] {
-    const { weeks, time } = this;
+    const { weeks, time, dayOfWeekOneBased } = this;
     const curretWeek = +Moment().format("E") === 7 ? 0 : +Moment().format("E");
     // 找到若插入sortedDays中的索引
     const sortedIndex = _.sortedIndex(weeks, +curretWeek);
@@ -344,9 +347,21 @@ class WeekCron extends Cron {
       ..._.sortedUniq(weeks.slice(0, sortedIndex))
     ]
       .slice(0, times)
-      .map((child, index) => {
-        // child为1时表示为周日
-        const diff = Number(child) === 1 ? 7 - curretWeek : Number(child) - curretWeek - 1;
+      .map(dayStr => {
+        const day = Number(dayStr);
+        let diff: number;
+
+        if (dayOfWeekOneBased) {
+          // day为1时表示为周日
+          diff = day === 1 ? 7 - curretWeek : day - curretWeek - 1;
+        } else {
+          // day为0时表示周日
+          diff = day - curretWeek;
+          if (diff < 0) {
+            diff = diff + 7;
+          }
+        }
+
         if (diff === 0) {
           const isBefore = Moment().isBefore(time);
           return Moment(time)
@@ -494,7 +509,7 @@ class MinuteCron extends Cron {
           );
       }
     }
-    
+
     return predictedTimes;
   }
 
