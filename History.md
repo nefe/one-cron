@@ -1,3 +1,7 @@
+# 0.3.8 / 2020-09-02
+
+- support case where day of week value ranges from 0 to 6
+
 # 0.3.7 / 2020-07-28
 
 - fix 修复预测时间初始化问题
