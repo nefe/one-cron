@@ -502,13 +502,17 @@ class MinuteCron extends Cron {
         predictedTimes = getArr(count)
         .map((item, index) => {
           const addTime = Number(stepMinute) * index
-          // 由于时间范围是0-59分，故需要排除在0点的数据
-          if (addTime % 60 >= 30) {
-            return;
-          }
           return `${Moment(beginTime)
             .add(addTime, "minutes")
             .format(format)}`;
+        }).filter(item=>{
+           // 由于时间范围是0-59分，故需要排除在0点的数据
+          const min = Moment(item).minute();
+          const sec = Moment(item).second();
+          if(min === 0 && sec === 0) {
+            return ;
+          }
+          return item;
         }).filter(Boolean).slice(0, times);
       }
     }
