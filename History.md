@@ -1,3 +1,7 @@
+# 0.3.9 / 2020-10-19
+
+- fix 修复分钟类型，间隔为30分时预测时间不能时整点的问题
+
 # 0.3.8 / 2020-09-02
 
 - support case where day of week value ranges from 0 to 6

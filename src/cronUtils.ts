@@ -500,13 +500,16 @@ class MinuteCron extends Cron {
         // 结束时间减去开始时间/间隔，然后slice(0,times)
         const count = Math.ceil(timeDiff / +stepMinute);
         predictedTimes = getArr(count)
-          .slice(0, times)
-          .map(
-            (item, index) =>
-              `${Moment(beginTime)
-                .add(+stepMinute * index, "minutes")
-                .format(format)}`
-          );
+        .map((item, index) => {
+          const addTime = Number(stepMinute) * index
+          // 由于时间范围是0-59分，故需要排除在0点的数据
+          if (addTime % 60 >= 30) {
+            return;
+          }
+          return `${Moment(beginTime)
+            .add(addTime, "minutes")
+            .format(format)}`;
+        }).filter(Boolean).slice(0, times);
       }
     }
 
