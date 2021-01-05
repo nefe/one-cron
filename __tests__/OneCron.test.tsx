@@ -61,5 +61,9 @@ describe('cronValidate', () => {
     expect(cronValidate('0 0 2 ? * 7,8', false)).toBe(false);
     // cronValidate函数支持dayOfWeek字段是SUN,MON这种格式，但是OneCron组件并不支持这种格式，只支持像1,2这种数据格式
     expect(cronValidate('0 0 2 ? * SUN,MON,TUE,WED,THU,FRI,SAT')).toBe(true);
+    // 测试strictValidate默认为true
+    expect(cronValidate('0 0 2 ? * 6,0', false)).toBe(false);
+    // 测试strictValidate为false
+    expect(cronValidate('0 0 2 ? * 6,0', false, false)).toBe(true);
   });
 });
