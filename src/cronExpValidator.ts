@@ -4,9 +4,10 @@ import * as _ from "lodash";
  * Validates a cron expression.
  *
  * @param cronExpression The expression to validate
+ * @param strictValidate 是否严格校验cron expression
  * @return True is expression is valid
  */
-export function cronValidate(cronExpression: string, dayOfWeekOneBased: boolean = true) {
+export function cronValidate(cronExpression: string, dayOfWeekOneBased = true, strictValidate = true) {
   var cronParams = cronExpression ? cronExpression.split(" ") : "";
 
   if (cronParams.length < 6 || cronParams.length > 7) {
@@ -40,7 +41,7 @@ export function cronValidate(cronExpression: string, dayOfWeekOneBased: boolean 
     }
 
     //Check day-of-week param
-    if (!checkDayOfWeekField(cronParams[5], dayOfWeekOneBased)) {
+    if (!checkDayOfWeekField(cronParams[5], dayOfWeekOneBased, strictValidate)) {
       return false;
     }
 
@@ -61,7 +62,7 @@ function checkSecondsField(secondsField: string) {
   return checkField(secondsField, 0, 59);
 }
 
-function checkField(secondsField: string, minimal: number, maximal: number) {
+function checkField(secondsField: string, minimal: number, maximal: number, strictValidate = true) {
   if (secondsField.indexOf("-") > -1) {
     const startValue = secondsField.substring(0, secondsField.indexOf("-"));
     const endValue = secondsField.substring(secondsField.indexOf("-") + 1);
@@ -82,7 +83,7 @@ function checkField(secondsField: string, minimal: number, maximal: number) {
       return false;
     }
   } else if (secondsField.indexOf(",") > -1) {
-    return checkListField(secondsField, minimal, maximal);
+    return checkListField(secondsField, minimal, maximal, strictValidate);
   } else if (secondsField.indexOf("/") > -1) {
     return checkIncrementField(secondsField, minimal, maximal);
   } else if (secondsField.indexOf("*") != -1) {
@@ -166,7 +167,7 @@ function checkMonthsField(monthsField: string) {
 
 const DAYS_OF_WEEK = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
-function checkDayOfWeekField(dayOfWeekField: string, dayOfWeekOneBased: boolean = true) {
+function checkDayOfWeekField(dayOfWeekField: string, dayOfWeekOneBased = true, strictValidate = true) {
   _.forEach(DAYS_OF_WEEK, (text: string, index: number) => {
     const value = dayOfWeekOneBased ? index + 1 : index;
     dayOfWeekField = dayOfWeekField.replace(text, `${value}`);
@@ -184,7 +185,7 @@ function checkDayOfWeekField(dayOfWeekField: string, dayOfWeekOneBased: boolean 
   } else if (dayOfWeekField.indexOf("#") >= 0) {
     return checkFieldWithLetter(dayOfWeekField, "#", min, max, 1, 5);
   } else {
-    return checkField(dayOfWeekField, min, max);
+    return checkField(dayOfWeekField, min, max, strictValidate);
   }
 }
 
@@ -290,7 +291,14 @@ function checkIncrementField(value, minimal, maximal) {
   }
 }
 
-function checkListField(value, minimal, maximal) {
+/**
+ * 
+ * @param value 
+ * @param minimal 
+ * @param maximal 
+ * @param strictValidate 是否开启严格校验。如果为true，value里的元素必须是严格递增顺序
+ */
+function checkListField(value, minimal, maximal, strictValidate = true) {
   const st = value.split(",");
 
   let values = new Array(st.length);
@@ -308,15 +316,17 @@ function checkListField(value, minimal, maximal) {
       return false;
     }
 
-    try {
-      let val = parseInt(currentValue, 10);
+    if (strictValidate) {
+      try {
+        let val = parseInt(currentValue, 10);
 
-      if (val <= previousValue) {
-        return false;
-      } else {
-        previousValue = val;
-      }
-    } catch (e) {}
+        if (val <= previousValue) {
+          return false;
+        } else {
+          previousValue = val;
+        }
+      } catch (e) {}
+    }
   }
 
   return true;

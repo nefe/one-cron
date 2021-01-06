@@ -60,6 +60,11 @@ export class OneCronProps {
   errorMessage? = '';
   /** day of week是否从1开始。如果为true时，周日至周六对应1~7；否则从0开始，周日至周六对应0~6 */
   dayOfWeekOneBased = true;
+  /**
+   * 是否严格校验cron表达式。如果为true，cron表达式的day of week字段必须是严格递增的, 
+   * 例如day of week是'5,6'，则是合法的。但如果是'6,5'，则校验不通过
+   */
+  strictValidate = true;
 }
 interface OneCronState {
   cron: AllCron;
@@ -76,8 +81,8 @@ export default class OneCron extends React.Component<
   static defaultProps = new OneCronProps();
 
   constructor(props: OneCronProps) {
-    super(props);
-    const cron = Cron.getCronFromExp(props.cronExpression, props.dayOfWeekOneBased);
+    super(props); 
+    const cron = Cron.getCronFromExp(props.cronExpression, props.dayOfWeekOneBased, props.strictValidate);
 
     this.state = {
       cron,
@@ -92,7 +97,7 @@ export default class OneCron extends React.Component<
   componentWillReceiveProps(nextProps: OneCronProps) {
     if (nextProps.cronExpression !== this.props.cronExpression) {
       if (this.state.isEmpty) {
-        const newCron = Cron.getCronFromExp(nextProps.cronExpression, nextProps.dayOfWeekOneBased);
+        const newCron = Cron.getCronFromExp(nextProps.cronExpression, nextProps.dayOfWeekOneBased, nextProps.strictValidate);
         const cronType =  newCron.periodType;
         this.setState({
           cron: newCron,
@@ -498,11 +503,12 @@ export default class OneCron extends React.Component<
       showRecentTime,
       options,
       dayOfWeekOneBased,
+      strictValidate,
     } = this.props;
     const I18N = getI18N(lang);
     const { cron } = this.state;
     const typeCx = cron.periodType;
-    const isValidate = cronValidate(cronExpression, dayOfWeekOneBased);
+    const isValidate = cronValidate(cronExpression, dayOfWeekOneBased, strictValidate);
     return (
       <span className={`schedule-period ${typeCx}`}>
         <Select
