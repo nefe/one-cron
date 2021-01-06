@@ -120,12 +120,12 @@ export class Cron {
     }
   }
 
-  static getCronFromExp(cronExp: string, dayOfWeekOneBased: boolean = true) {
+  static getCronFromExp(cronExp: string, dayOfWeekOneBased = true, strictValidate = true) {
     if (!cronExp) {
       return new DayCron({});
     }
     // 验证cronExp正确性
-    if (!cronValidate(cronExp, dayOfWeekOneBased)) {
+    if (!cronValidate(cronExp, dayOfWeekOneBased, strictValidate)) {
       return new DayCron({});
     }
 
