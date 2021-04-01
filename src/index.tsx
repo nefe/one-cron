@@ -533,7 +533,7 @@ export default class OneCron extends React.Component<
           </Checkbox>
         )}
         {this.renderDetail()}
-        {!isValidate && (
+        {cronExpression && !isValidate && (
           <span className='errorCronExp'>{I18N.errorCronExp}</span>
         )}
         <span className='exp'>
