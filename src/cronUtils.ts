@@ -209,12 +209,12 @@ export class DayCron extends Cron {
     // isBefore表示当前时间之前是否是设置时间之前
     // 若之前，则直接从第二天计算开始，否则从当天时间开始
     const isBefore = now.isBefore(time);
-    const predictedTimes = getArr(times).map(
+    const predictedTimes = time ? getArr(times).map(
       (current, index) =>
         `${Moment(time)
           .add(isBefore ? index : index + 1, "days")
           .format(format)}`
-    );
+    ): [];
 
     return predictedTimes;
   }
