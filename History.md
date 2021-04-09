@@ -1,3 +1,5 @@
+# 0.3.15 / 2021-04-08
+- feat: add recentTimeNum prop for customizing recent times to display
 # 0.3.14 / 2021-04-08
 - fix: 修复时间间隔与起始时间超过60的特殊情况
 # 0.3.13 / 2021-04-08
