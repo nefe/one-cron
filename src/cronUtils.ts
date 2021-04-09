@@ -506,11 +506,15 @@ class MinuteCron extends Cron {
             .add(addTime, "minutes")
             .format(format)}`;
         }).filter(item=>{
-           // 由于时间范围是0-59分，故需要排除在0点的数据
+          //  30/30 是从30分开始每隔30分执行一次, 因为没有60分钟的说法, 所以就是每个小时的30分执行
+          //  0/30 是从0分钟开始每隔30分钟执行一次, 所以就是每个小时的0分, 30分执行
           const min = Moment(item).minute();
           const sec = Moment(item).second();
-          if(min === 0 && sec === 0) {
-            return ;
+          const total = Number(getMins(beginTime))+ Number(stepMinute)
+          if(total === 60) {
+            if(min === 0) {
+              return;
+            }
           }
           return item;
         }).filter(Boolean).slice(0, times);
