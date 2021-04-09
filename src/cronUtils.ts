@@ -499,24 +499,16 @@ class MinuteCron extends Cron {
       } else {
         // 结束时间减去开始时间/间隔，然后slice(0,times)
         const count = Math.ceil(timeDiff / +stepMinute);
+        //  30/30 是从30分开始每隔30分执行一次, 超过60分钟，则跳过
+        //  0/30 是从0分钟开始每隔30分钟执行一次, 所以就是每个小时的0分, 30分执行
+        const total = Number(getMins(beginTime))+ Number(stepMinute)
+        const step = total >= 60 ? 60 : stepMinute
         predictedTimes = getArr(count)
         .map((item, index) => {
-          const addTime = Number(stepMinute) * index
+          const addTime = Number(step) * index
           return `${Moment(beginTime)
             .add(addTime, "minutes")
             .format(format)}`;
-        }).filter(item=>{
-          //  30/30 是从30分开始每隔30分执行一次, 因为没有60分钟的说法, 所以就是每个小时的30分执行
-          //  0/30 是从0分钟开始每隔30分钟执行一次, 所以就是每个小时的0分, 30分执行
-          const min = Moment(item).minute();
-          const sec = Moment(item).second();
-          const total = Number(getMins(beginTime))+ Number(stepMinute)
-          if(total === 60) {
-            if(min === 0) {
-              return;
-            }
-          }
-          return item;
         }).filter(Boolean).slice(0, times);
       }
     }
