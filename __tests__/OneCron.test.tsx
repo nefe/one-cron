@@ -67,3 +67,23 @@ describe('cronValidate', () => {
     expect(cronValidate('0 0 2 ? * 6,0', false, false)).toBe(true);
   });
 });
+
+describe('recentTimeNum prop', () => {
+  it('recentTimeNum by default', () => {
+    const cronExpression = '0 0 1 * * ?';
+    const cronOne = Enzyme.render(
+      <OneCron cronExpression={cronExpression} showRecentTime={true} />
+    );
+    // 默认展示5个最近调度时间
+    expect(cronOne.find(".recent > ul > li").length).toBe(5);
+  });
+  
+  it('recentTimeNum is 3', () => {
+    const cronExpression = '0 0 1 * * ?';
+    const cronOne = Enzyme.render(
+      <OneCron cronExpression={cronExpression} recentTimeNum={3} showRecentTime={true} />
+    );
+    // 展示3个最近调度时间
+    expect(cronOne.find(".recent > ul > li").length).toBe(3);
+  });
+});

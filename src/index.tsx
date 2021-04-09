@@ -65,6 +65,10 @@ export class OneCronProps {
    * 例如day of week是'5,6'，则是合法的。但如果是'6,5'，则校验不通过
    */
   strictValidate = true;
+  /**
+   * 展示最近生成时间的数量
+   */
+  recentTimeNum? = 5;
 }
 interface OneCronState {
   cron: AllCron;
@@ -89,7 +93,7 @@ export default class OneCron extends React.Component<
       cronType: cron.periodType,
       isEmpty: !props.cronExpression,
       endOpen: false,
-      timeList: cron.getPredictedTimes(),
+      timeList: cron.getPredictedTimes(props.recentTimeNum),
       isError: false
     };
   }
@@ -103,7 +107,7 @@ export default class OneCron extends React.Component<
           cron: newCron,
           cronType,
           isEmpty: false,
-          timeList: newCron.getPredictedTimes()
+          timeList: newCron.getPredictedTimes(nextProps.recentTimeNum)
         });
       }
     }
@@ -115,7 +119,7 @@ export default class OneCron extends React.Component<
       {
         cron: newCron,
         cronType: periodType,
-        timeList: newCron.getPredictedTimes()
+        timeList: newCron.getPredictedTimes(this.props.recentTimeNum)
       },
       () => {
         this.triggerValidate(newCron);
@@ -157,7 +161,7 @@ export default class OneCron extends React.Component<
   }
 
   triggerChange() {
-    const timeList = this.state.cron.getPredictedTimes();
+    const timeList = this.state.cron.getPredictedTimes(this.props.recentTimeNum);
     this.setState({
       timeList
     });
