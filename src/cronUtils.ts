@@ -571,7 +571,6 @@ class MinuteCron extends Cron {
     let start = Moment(beginTime);
     let end = Moment(endTime);
     let now = Moment();
-
     if (this.delay >= 1) {
       start = start.add(this.delay, 'd');
       end = end.add(this.delay, 'd');
@@ -587,7 +586,7 @@ class MinuteCron extends Cron {
       } else if (isGtStart && !isGtEnd) {
         /* 当前选择时间在开始和结束时间的中间 */
         stepMinute = !parseInt(stepMinute) ? '05' : stepMinute;
-        const total = Number(getMins(start)) + Number(stepMinute)
+        const total = Number(beginTime.minutes()) + Number(stepMinute)
         stepMinute = total >= 60 ? '60' : stepMinute
         let diff = Math.ceil((Number(getMins(now)) - Number(getMins(start))) / +stepMinute);
         start = start.add(Math.abs(diff * +stepMinute), 'minute');
@@ -614,7 +613,7 @@ class MinuteCron extends Cron {
         const count = Math.ceil(timeDiff / +stepMinute);
         //  30/30 是从30分开始每隔30分执行一次, 超过60分钟，则跳过
         //  0/30 是从0分钟开始每隔30分钟执行一次, 所以就是每个小时的0分, 30分执行
-        const total = Number(getMins(start))+ Number(stepMinute)
+        const total = Number(start.minutes())+ Number(stepMinute)
         const step = total >= 60 ? 60 : stepMinute
         predictedTimes = getArr(count)
         .map((item, index) => {
