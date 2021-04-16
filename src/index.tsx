@@ -45,6 +45,8 @@ export class OneCronProps {
   /** 校验 */
   onValidate? = (error: boolean) => {};
   lang? = LangEnum.en_US;
+  /** T+n */
+  delay? = 1;
   showCheckbox? = false;
   disabled? = false;
   showRecentTime? = false;
@@ -87,6 +89,7 @@ export default class OneCron extends React.Component<
   constructor(props: OneCronProps) {
     super(props); 
     const cron = Cron.getCronFromExp(props.cronExpression, props.dayOfWeekOneBased, props.strictValidate);
+    cron.delay = this.props.delay;
 
     this.state = {
       cron,
@@ -102,6 +105,7 @@ export default class OneCron extends React.Component<
     if (nextProps.cronExpression !== this.props.cronExpression) {
       if (this.state.isEmpty) {
         const newCron = Cron.getCronFromExp(nextProps.cronExpression, nextProps.dayOfWeekOneBased, nextProps.strictValidate);
+        newCron.delay = this.props.delay;
         const cronType =  newCron.periodType;
         this.setState({
           cron: newCron,
@@ -115,6 +119,7 @@ export default class OneCron extends React.Component<
 
   handleChangePeriodType(periodType: PeriodType) {
     const newCron = Cron.getCronFromPeriodType(periodType, this.props.dayOfWeekOneBased);
+    newCron.delay = this.props.delay;
     this.setState(
       {
         cron: newCron,
