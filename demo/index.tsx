@@ -30,8 +30,8 @@ class App extends React.Component<Prop, State> {
   componentDidMount() {
     console.log(cronValidate('0 0 7-14/1 * * ?'));
   }
-  onValidate(error){
-    console.log('error',error)
+  onValidate(error) {
+    console.log('error', error)
   }
   render() {
     return (
