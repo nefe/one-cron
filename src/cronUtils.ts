@@ -93,8 +93,31 @@ export const getMins = (time: Moment.Moment): number => {
 
 export type AllCron = DayCron | WeekCron | MonthCron | HourCron | MinuteCron;
 
-export class Cron {
+type timeMoment = {
+  start?: Moment.Moment,
+  end?: Moment.Moment
+}
+
+interface CronInterface {
+  /**
+   * 根据当前时间或者delay重置，开始和结束时间，子类会继承重写此方法
+   * 目的： 修改bug #33456510
+   */
+  resetStartAndEndTime(): timeMoment
+}
+
+export class Cron implements CronInterface{
   periodType: PeriodType;
+
+  /**
+   * T+n，定时任务开始时间为n天/n月/n年后，默认为1
+   * 若传值为0，那么就取大于当前时间的最新周期
+   */
+  delay: number = 1;
+
+  resetStartAndEndTime() {
+    return {}
+  }
 
   init(cron: any) {
     _.forEach(cron, (value, key) => {
@@ -173,7 +196,7 @@ export class Cron {
       } else if (hour.includes("/")) {
         // 时间段
         const [duration, stepHour] = hour.split("/");
-        const [beginHour, endHour] = hour.split("-");
+        const [beginHour, endHour] = duration.split("-");
 
         return new HourCron({
           beginTime: Moment(`${beginHour}:${minute}`, "HH:mm"),
@@ -204,15 +227,16 @@ export class DayCron extends Cron {
 
   /** 产生预测时间-Day */
   getPredictedTimes(times = 5, format = DEFAULT_FORMAT): string[] {
-    const time = this.time;
-    const now = Moment();
+    const { time, delay } = this;
+    const now = Moment().add(delay >= 1 ? delay : 0, 'd');
     // isBefore表示当前时间之前是否是设置时间之前
     // 若之前，则直接从第二天计算开始，否则从当天时间开始
     const isBefore = now.isBefore(time);
+    const step = delay >= 1 ? delay : (isBefore ? 0 : 1);
     const predictedTimes = time ? getArr(times).map(
       (current, index) =>
         `${Moment(time)
-          .add(isBefore ? index : index + 1, "days")
+          .add(index + step, "days")
           .format(format)}`
     ): [];
 
@@ -252,9 +276,9 @@ class MonthCron extends Cron {
 
   // 计算预测时间
   generatePredicteTimes(times = 5, format = DEFAULT_FORMAT): string[] {
-    const { days, time } = this;
+    const { days, time, delay } = this;
     const sortedDays = days.sort((a, b) => +a - +b);
-    const now = Moment();
+    const now = Moment().add(delay >= 1 ? delay : 0, 'd');
     const currentDay = +Moment().format("DD");
     const sortedIndex = _.sortedIndex(sortedDays, currentDay);
     const predictedTimes = [
@@ -338,8 +362,10 @@ class WeekCron extends Cron {
   }
 
   generatePredictedTime(times = 5, format = DEFAULT_FORMAT): string[] {
-    const { weeks, time, dayOfWeekOneBased } = this;
-    const curretWeek = +Moment().format("E") === 7 ? 0 : +Moment().format("E");
+    const { weeks, time, dayOfWeekOneBased, delay } = this;
+    const now = Moment();
+    const curretWeek = +now.format("E") === 7 ? 0 : +now.format("E");
+    
     // 找到若插入sortedDays中的索引
     const sortedIndex = _.sortedIndex(weeks, +curretWeek);
     const predictedTimes = [
@@ -364,8 +390,9 @@ class WeekCron extends Cron {
 
         if (diff === 0) {
           const isBefore = Moment().isBefore(time);
+          const delayStep = delay >= 1 ? delay : (isBefore ? 0 : 1);
           return Moment(time)
-            .add(isBefore ? 0 : 1, "weeks")
+            .add(delayStep, "weeks")
             .format(format);
         } else {
           return Moment(time)
@@ -440,6 +467,56 @@ class HourCron extends Cron {
     }
   }
 
+  resetStartAndEndTime(): {
+    start: Moment.Moment,
+    end: Moment.Moment
+  } {
+    let { beginTime, endTime, stepHour } = this;
+    let start = Moment(beginTime)
+    let end = Moment(endTime);
+    let now = Moment();
+
+    if (this.delay >= 1) {
+      start = start.add(this.delay, 'd')
+      end = end.add(this.delay, 'd');
+    } else {
+      /* 第一步：判断当前时间 是否 大于 开始时间和结束时间 */
+      let isGtStart = now.isAfter(start)
+      let isGtEnd = now.isAfter(end)
+      /* 当前选择时间在开始和结束时间的 右边 */
+      if (isGtStart && isGtEnd) {
+        start = start.add(1, 'd');
+        end = end.add(1, 'd')
+      } else if (isGtStart && !isGtEnd) {
+        /* 当前选择时间在开始和结束时间的中间 */
+        stepHour = !parseInt(stepHour) ? '1' : stepHour;
+        const total = Math.ceil(Number(getMins(start) / 60)) + Number(stepHour)
+        stepHour = total >= 12 ? '12' : stepHour
+        /** 计算开始时间距离当前时间最近一个点的小时数 */
+        let dh = (Number(getMins(now)) - Number(getMins(start))) / 60
+        let diff = Math.ceil(dh / +stepHour);
+        start = start.add(Math.abs(diff * +stepHour), 'h');
+      }
+    }
+    return {
+      start, end
+    }
+  }
+
+  checkTimes(): Moment.Moment[] {
+    let { hours, delay } = this;
+    let nowHour = Math.ceil(getMins(Moment()) / 60);
+    let newHours = hours.map(item => {
+      if (delay >= 1) {
+        return Moment(item, 'HH').add(delay, 'd')
+      } else if (+item < nowHour) {
+        return Moment(item, 'HH').add(1, 'd')
+      }
+      return Moment(item, 'HH')
+    }).sort((a: Moment.Moment, b: Moment.Moment) => a.isAfter(b) ? 1 : -1);
+    return newHours
+  }
+
   /** 产生预测时间-Hour */
   getPredictedTimes(times = 5, format = DEFAULT_FORMAT): string[] {
     const { hasInterval, beginTime, endTime, hours, stepHour } = this;
@@ -448,9 +525,10 @@ class HourCron extends Cron {
     const isValid = Moment(beginTime).isValid() && Moment(endTime).isValid();
     if (hasInterval) {
       if(isValid) {
-        const minDiff = getMins(endTime) - getMins(beginTime);
+        const {start, end} = this.resetStartAndEndTime();
+        const minDiff = getMins(end) - getMins(start);
         if (minDiff <= +stepHour * 60) {
-          predictedTimes = [Moment(beginTime).format(format)];
+          predictedTimes = [Moment(start).format(format)];
         } else {
           // 结束时间减去开始时间/间隔，然后slice(0,times)
           const count = Math.ceil(minDiff / (+stepHour * 60));
@@ -458,16 +536,14 @@ class HourCron extends Cron {
             .slice(0, times)
             .map(
               (item, index) =>
-                `${Moment(beginTime)
+                `${Moment(start)
                   .add(+stepHour * index, "hours")
                   .format(format)}`
             );
         }
       }
     } else {
-      predictedTimes = hours
-        .slice(0, times)
-        .map(hour => `${Moment(hour, "HH").format(format)}`);
+      predictedTimes = this.checkTimes().slice(0, times).map(item => `${item.format(format)}`);
     }
 
     return predictedTimes;
@@ -486,27 +562,63 @@ class MinuteCron extends Cron {
   endTime? = Moment("23:59", "HH:mm");
   stepMinute? = "05";
 
+  /** 修正开始和结束时间 */
+  resetStartAndEndTime(): {
+    start: Moment.Moment
+    end: Moment.Moment
+  } {
+    let { beginTime, endTime, stepMinute } = this;
+    let start = Moment(beginTime);
+    let end = Moment(endTime);
+    let now = Moment();
+    if (this.delay >= 1) {
+      start = start.add(this.delay, 'd');
+      end = end.add(this.delay, 'd');
+    } else {
+      /* 第一步：判断当前时间 是否 大于 开始时间和结束时间 */
+      let isGtStart = now.isAfter(start)
+      let isGtEnd = now.isAfter(end)
+      /* 当前选择时间在开始和结束时间的 右边 */
+      if (isGtStart && isGtEnd) {
+        /* 将当前时间+1天返回 */
+        start = start.add(1, 'd');
+        end = end.add(1, 'd');
+      } else if (isGtStart && !isGtEnd) {
+        /* 当前选择时间在开始和结束时间的中间 */
+        stepMinute = !parseInt(stepMinute) ? '05' : stepMinute;
+        const total = Number(beginTime.minutes()) + Number(stepMinute)
+        stepMinute = total >= 60 ? '60' : stepMinute
+        let diff = Math.ceil((Number(getMins(now)) - Number(getMins(start))) / +stepMinute);
+        start = start.add(Math.abs(diff * +stepMinute), 'minute');
+      }
+    }
+    return {
+      start, end
+    }
+  }
+
   /** 产生预测时间-Min */
   getPredictedTimes(times = 5, format = DEFAULT_FORMAT): string[] {
     const { beginTime, endTime, stepMinute } = this;
     let predictedTimes = [];
-    const timeDiff = getMins(endTime) - getMins(beginTime);
     const isValid = Moment(beginTime).isValid() && Moment(endTime).isValid();
     if (isValid) {
+      const {start,end} = this.resetStartAndEndTime();
+      const timeDiff = getMins(end) - getMins(start);
       if (timeDiff <= +stepMinute) {
         // 判断开始结束时间是否大于间隔时间，否则返回开始时间
-        predictedTimes = [Moment(beginTime).format(format)];
+        predictedTimes = [Moment(start).format(format)];
       } else {
         // 结束时间减去开始时间/间隔，然后slice(0,times)
         const count = Math.ceil(timeDiff / +stepMinute);
         //  30/30 是从30分开始每隔30分执行一次, 超过60分钟，则跳过
         //  0/30 是从0分钟开始每隔30分钟执行一次, 所以就是每个小时的0分, 30分执行
-        const total = Number(getMins(beginTime))+ Number(stepMinute)
+        const total = Number(start.minutes())+ Number(stepMinute)
         const step = total >= 60 ? 60 : stepMinute
         predictedTimes = getArr(count)
         .map((item, index) => {
           const addTime = Number(step) * index
-          return `${Moment(beginTime)
+          return `${Moment(start)
             .add(addTime, "minutes")
             .format(format)}`;
         }).filter(Boolean).slice(0, times);
