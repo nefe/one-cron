@@ -1,4 +1,6 @@
-# 0.0.16 / 2021-04-19
+# 0.3.17 / 2021-04-25
+- feat: 新增获取最新时间方法
+# 0.3.16 / 2021-04-19
 - feat:新增delay参数： T+n(delay)。默认为1，如果当前参数传递为0，那么任务执行时间就按当前时间往后的执行时间
 # 0.3.15 / 2021-04-08
 - feat: add recentTimeNum prop for customizing recent times to display
