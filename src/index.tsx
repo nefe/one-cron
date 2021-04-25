@@ -14,7 +14,8 @@ import {
   getDayItems,
   getStepMinuteItems,
   getSteoHourItems,
-  getHourItems
+  getHourItems,
+  getPredictedTimes,
 } from "./cronUtils";
 import { cronValidate } from "./cronExpValidator";
 import { getI18N, LangEnum } from "./I18N";
@@ -565,4 +566,4 @@ export default class OneCron extends React.Component<
 }
 
 // 提供cron Expression验证方法
-export { cronValidate };
+export { cronValidate, getPredictedTimes };
