@@ -7,6 +7,32 @@ export function isStrNum(str: string) {
   return !Number.isNaN(Number(str));
 }
 
+/** 新增对外报漏方法： 由表达式获取最近时间 */
+interface typeCornProps {
+  /** 表达式 */
+  corn: string;
+  /** T+n */
+  delay?:number;
+  /** day of week是否从1开始。如果为true时，周日至周六对应1~7；否则从0开始，周日至周六对应0~6 */
+  dayOfWeekOneBased?:boolean;
+  /**
+   * 是否严格校验cron表达式。如果为true，cron表达式的day of week字段必须是严格递增的, 
+   * 例如day of week是'5,6'，则是合法的。但如果是'6,5'，则校验不通过
+   */
+  strictValidate?:boolean;
+  /**
+   * 展示最近生成时间的数量
+   */
+  recentTimeNum?:number;
+}
+
+export function getPredictedTimes (props: typeCornProps): string[] {
+  const { corn, dayOfWeekOneBased = true,  strictValidate = true, recentTimeNum = 5, delay = 1}  = props;
+  const cron = Cron.getCronFromExp(corn, dayOfWeekOneBased, strictValidate);
+  cron.delay = delay;
+  return cron.getPredictedTimes(recentTimeNum);
+}
+
 export enum PeriodType {
   day = "day",
   week = "week",
