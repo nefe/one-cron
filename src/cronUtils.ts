@@ -209,7 +209,7 @@ export class Cron implements CronInterface{
 
       return new MinuteCron({
         beginTime: Moment(`${beginHour}:${beginMinute}`, "HH:mm"),
-        endTime: Moment(`${endHour}:00`, "HH:mm"),
+        endTime: Moment(`${endHour}:59`, "HH:mm"),
         stepMinute
       });
     } else {
