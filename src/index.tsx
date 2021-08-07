@@ -44,7 +44,7 @@ export class OneCronProps {
   cronExpression?: string;
   onChange? = (exp: AllCron) => {};
   /** 校验 */
-  onValidate? = (error: boolean) => {};
+  onValidate? = (error: boolean, cron: AllCron) => {};
   lang? = LangEnum.en_US;
   /** T+n */
   delay? = 1;
@@ -62,16 +62,18 @@ export class OneCronProps {
   /** 错误信息 */
   errorMessage? = '';
   /** day of week是否从1开始。如果为true时，周日至周六对应1~7；否则从0开始，周日至周六对应0~6 */
-  dayOfWeekOneBased = true;
+  dayOfWeekOneBased? = true;
   /**
    * 是否严格校验cron表达式。如果为true，cron表达式的day of week字段必须是严格递增的, 
    * 例如day of week是'5,6'，则是合法的。但如果是'6,5'，则校验不通过
    */
-  strictValidate = true;
+  strictValidate? = true;
   /**
    * 展示最近生成时间的数量
    */
   recentTimeNum? = 5;
+  /** 为true时表示小时调度的时间点至少需要选择两项。如果只选择一项的话，cron表达式有二义性，可以同时理解成日调度和小时调度 */
+  twoHourItemsRequired? = false;
 }
 interface OneCronState {
   cron: AllCron;
@@ -137,12 +139,14 @@ export default class OneCron extends React.Component<
   onValidate(isError:boolean){
     this.setState({
       isError
-    })
-    this.props.onValidate && this.props.onValidate(isError)
+    });
+    this.props.onValidate && this.props.onValidate(isError, this.state.cron);
   }
 
   // 校验某些选择项是否有填，当前只对week,month,hour类型进行判断
   triggerValidate(cron){
+    const { twoHourItemsRequired } = this.props;
+
     if(cron.periodType === 'week') {
       if(cron.weeks.length === 0){
         this.onValidate(true)
@@ -156,7 +160,7 @@ export default class OneCron extends React.Component<
         this.onValidate(false)
       }
     } else if (cron.periodType === 'hour') {
-      if(cron.hours.length === 0 && cron.hasInterval === false) {
+      if (cron.hasInterval === false && (cron.hours.length === 0 || (twoHourItemsRequired && cron.hours.length === 1))) {
         this.onValidate(true);
       }else {
         this.onValidate(false)

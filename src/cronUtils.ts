@@ -467,7 +467,7 @@ class WeekCron extends Cron {
   }
 }
 
-class HourCron extends Cron {
+export class HourCron extends Cron {
   readonly periodType = PeriodType.hour;
 
   /** 是否使用时间段 */

@@ -87,3 +87,43 @@ describe('recentTimeNum prop', () => {
     expect(cronOne.find(".recent > ul > li").length).toBe(3);
   });
 });
+
+describe('twoHourItemsRequired prop', () => {
+  it('twoHourItemsRequired is false (by default)', async () => {
+    const cronExpression = '0 0 1,2 * * ?';
+    const errorMessage = 'test error message';
+    const cronOne = Enzyme.mount(
+      <OneCron cronExpression={cronExpression} showRecentTime={true} errorMessage={errorMessage} />
+    );
+    // 点击时间点的“1时”删除按钮，删除“1时”选项，此时只剩下“2时”选项
+    cronOne.find('.ant-select-selection__choice__remove').first().simulate('click');
+    // 等待antd Select动画结束
+    await new Promise(resolve => {
+      setTimeout(() => {
+        resolve(null);
+      } , 2000);
+    });
+    cronOne.update();
+    // twoHourItemsRequired默认为false，时间点只选择了一项时，不报错
+    expect(cronOne.find('.cron-select-errorMessage').length).toBe(0);
+  });
+  
+  it('twoHourItemsRequired is true', async () => {
+    const cronExpression = '0 0 1,2 * * ?';
+    const errorMessage = 'test error message';
+    const cronOne = Enzyme.mount(
+      <OneCron cronExpression={cronExpression} showRecentTime={true} errorMessage={errorMessage} twoHourItemsRequired={true} />
+    );
+    // 点击时间点的“1时”删除按钮，删除“1时”选项，此时只剩下“2时”选项
+    cronOne.find('.ant-select-selection__choice__remove').first().simulate('click');
+    // 等待antd Select动画结束
+    await new Promise(resolve => {
+      setTimeout(() => {
+        resolve(null);
+      } , 2000);
+    });
+    cronOne.update();
+    // twoHourItemsRequired为true，时间点只选择了一项时，报错
+    expect(cronOne.find('.cron-select-errorMessage').text()).toBe(errorMessage);
+  });
+});
