@@ -643,7 +643,13 @@ class MinuteCron extends Cron {
         const step = total >= 60 ? 60 : stepMinute
         predictedTimes = getArr(count)
         .map((item, index) => {
-          const addTime = Number(step) * index
+           // 计算60分钟内的循环次数
+           const iter = Math.ceil(60 / Number(step));
+           // 新增小时
+           const hour = item < iter ?0:Math.floor(item / iter);
+           
+           const addTime = Number(step) * (index % iter) + 60 * hour;
+
           return `${Moment(start)
             .add(addTime, "minutes")
             .format(format)}`;

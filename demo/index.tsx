@@ -19,7 +19,7 @@ enum LangEnum {
 }
 class App extends React.Component<Prop, State> {
   state: State = {
-    cronExpression: '0 0/10 0-23 * * ?'
+    cronExpression: '0 0/55 0-6 * * ?'
   };
   handleChange(exp) {
     this.setState({
@@ -30,7 +30,7 @@ class App extends React.Component<Prop, State> {
   componentDidMount() {
     console.log(cronValidate('0 0 7-14/1 * * ?'));
     console.log(getPredictedTimes({
-      corn: '0 0/10 0-23 * * ?'
+      corn: '0 0/55 0-6 * * ?'
     }))
   }
   onValidate(error){
