@@ -300,6 +300,20 @@ class MonthCron extends Cron {
     }
   }
 
+  /**
+   * 计算带明确日期的有效时间，若入参拼接得到的时间有效，则返回拼接的时间，否则返回下一个月的日期
+   * 譬如 monthWithYear = Moment('2022-02'), day = '29', 返回 '2022-03-29';
+   */
+  getValidNextDateWithMonth(monthWithYear: Moment.Moment, day: string, format = DEFAULT_FORMAT) {
+    const [year, month] =  Moment(monthWithYear).format("YYYY-MM").split('-');
+    const dayInNextMonth = Moment(`${year}-${month}-${day}`);
+    if (dayInNextMonth.isValid()) {
+     return dayInNextMonth.format(format);
+    }
+    // 12月有31天，该月所有日期是有效的，因此这里可以直接 month + 1 
+    return  Moment(`${year}-${+month + 1}-${day}`).format(format);
+  }
+
   // 计算预测时间
   generatePredicteTimes(times = 5, format = DEFAULT_FORMAT): string[] {
     const { days, time, delay } = this;
@@ -317,14 +331,9 @@ class MonthCron extends Cron {
         // 为当天时，则比较具体的时间
         if (diff === 0) {
           const isBefore = now.isBefore(time);
-          return Moment(time)
-            .add(isBefore ? 0 : 1, "months")
-            .format(format);
+          return this.getValidNextDateWithMonth(Moment(time).add(isBefore ? 0 : 1, "months"), selectedDay);
         } else {
-          return Moment(time)
-            .add(diff >= 0 ? 0 : 1, "months")
-            .add(`${diff}`, "days")
-            .format(format);
+          return this.getValidNextDateWithMonth(Moment(time).add(diff >= 0 ? 0 : 1, "months"), selectedDay);
         }
       })
       .sort((a, b) => {
@@ -348,18 +357,19 @@ class MonthCron extends Cron {
         // 每一个月的XX号都执行
         getArr(times - days.length).forEach((item, index) => {
           list.forEach(predictedTime => {
-            if (predictedTimes.length < times) {
-              predictedTimes.push(
-                Moment(predictedTime)
-                  .add(index + 1, "months")
-                  .format(format)
-              );
+            const day = Moment(predictedTime).format("DD");
+            let time = this.getValidNextDateWithMonth(Moment(predictedTime).add(index + 1, "months"), day);
+            while(predictedTimes.includes(time)) {
+              time =  this.getValidNextDateWithMonth(Moment(time).add(1, "months"), day);
             }
+            predictedTimes.push(time);
           });
         });
       }
     }
-    return predictedTimes;
+    return predictedTimes.sort((a, b) => {
+      return +Moment(a).format("YYYYMMDD") - +Moment(b).format("YYYYMMDD");
+    }).slice(0, times);
   }
 
   constructor(cron: Partial<MonthCron>) {
