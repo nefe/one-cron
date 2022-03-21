@@ -9,7 +9,6 @@ import {
   AllCron,
   DayCron,
   PeriodType,
-  DayOfWeekType,
   getPeriodItems,
   getWeekItems,
   getDayItems,
@@ -20,6 +19,7 @@ import {
 } from "./cronUtils";
 import { cronValidate } from "./cronExpValidator";
 import { getI18N, LangEnum } from "./I18N";
+import { DayOfWeekType } from './define';
 const Option = Select.Option;
 const RadioGroup = Radio.Group;
 

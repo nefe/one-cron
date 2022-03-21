@@ -2,19 +2,10 @@ import * as Moment from "moment";
 import * as _ from "lodash";
 import { getI18N, getArr, LangEnum } from "./I18N";
 import { cronValidate } from "./cronExpValidator";
+import { DayOfWeekType } from './define';
 
 export function isStrNum(str: string) {
   return !Number.isNaN(Number(str));
-}
-
-/** 不同语言对于周调度的取值不同 */
-export const enum DayOfWeekType {
-  // 周日到周六对应 0-6 
-  Linux = 'Linux',
-  // 周一到周日对应 1-7
-  Spring = 'Spring',
-  // 周日到周六对应 1-7
-  Quartz = 'Quartz',
 }
 
 /** 新增对外报漏方法： 由表达式获取最近时间 */
