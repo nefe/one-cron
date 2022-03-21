@@ -9,6 +9,7 @@ import {
   AllCron,
   DayCron,
   PeriodType,
+  DayOfWeekType,
   getPeriodItems,
   getWeekItems,
   getDayItems,
@@ -74,6 +75,8 @@ export class OneCronProps {
   recentTimeNum? = 5;
   /** 为true时表示小时调度的时间点至少需要选择两项。如果只选择一项的话，cron表达式有二义性，可以同时理解成日调度和小时调度 */
   twoHourItemsRequired? = false;
+  /** 使用哪种语言的周调度定义，Linux 中周日到周六对应 0-6，Spring 中周一到周日对应 1-7，Quartz 中周日到周六对应 1-7，默认使用 Quartz */
+  dayOfWeek? = DayOfWeekType.Quartz;
 }
 interface OneCronState {
   cron: AllCron;
@@ -90,8 +93,10 @@ export default class OneCron extends React.Component<
   static defaultProps = new OneCronProps();
 
   constructor(props: OneCronProps) {
-    super(props); 
-    const cron = Cron.getCronFromExp(props.cronExpression, props.dayOfWeekOneBased, props.strictValidate);
+    super(props);
+    // 兼容历史 dayOfWeekOneBased 字段配置
+    const dayOfWeek = props.dayOfWeekOneBased === false ? DayOfWeekType.Linux : props.dayOfWeek;
+    const cron = Cron.getCronFromExp(props.cronExpression, dayOfWeek, props.strictValidate);
     cron.delay = this.props.delay;
 
     this.state = {
@@ -107,7 +112,8 @@ export default class OneCron extends React.Component<
   componentWillReceiveProps(nextProps: OneCronProps) {
     if (nextProps.cronExpression !== this.props.cronExpression) {
       if (this.state.isEmpty) {
-        const newCron = Cron.getCronFromExp(nextProps.cronExpression, nextProps.dayOfWeekOneBased, nextProps.strictValidate);
+        const dayOfWeek = nextProps.dayOfWeekOneBased === false ? DayOfWeekType.Linux : nextProps.dayOfWeek;
+        const newCron = Cron.getCronFromExp(nextProps.cronExpression, dayOfWeek, nextProps.strictValidate);
         newCron.delay = this.props.delay;
         const cronType =  newCron.periodType;
         this.setState({
@@ -121,7 +127,8 @@ export default class OneCron extends React.Component<
   }
 
   handleChangePeriodType(periodType: PeriodType) {
-    const newCron = Cron.getCronFromPeriodType(periodType, this.props.dayOfWeekOneBased);
+    const dayOfWeek = this.props.dayOfWeekOneBased === false ? DayOfWeekType.Linux : this.props.dayOfWeek;
+    const newCron = Cron.getCronFromPeriodType(periodType, dayOfWeek);
     newCron.delay = this.props.delay;
     this.setState(
       {
@@ -221,6 +228,7 @@ export default class OneCron extends React.Component<
       multiple,
       dayOfWeekOneBased,
     } = this.props;
+    const dayOfWeek = dayOfWeekOneBased === false ? DayOfWeekType.Linux : this.props.dayOfWeek;
     const disabledHours = () => [
       ...getArr(beginTime, 0),
       ...getArr(24 - endTime, endTime === 0 ? 1 : endTime)
@@ -308,7 +316,7 @@ export default class OneCron extends React.Component<
                 }}
                 value={cron.weeks.filter(item => item !== '*')}
               >
-                {getOptions(getWeekItems(lang, dayOfWeekOneBased))}
+                {getOptions(getWeekItems(lang, dayOfWeek))}
               </Select>
               {this.state.isError && this.props.errorMessage && <div className="cron-select-errorMessage">{this.props.errorMessage}</div>}
             </span> 
@@ -522,7 +530,8 @@ export default class OneCron extends React.Component<
     const I18N = getI18N(lang);
     const { cron } = this.state;
     const typeCx = cron.periodType;
-    const isValidate = cronValidate(cronExpression, dayOfWeekOneBased, strictValidate);
+    const dayOfWeek = dayOfWeekOneBased === false ? DayOfWeekType.Linux : this.props.dayOfWeek;
+    const isValidate = cronValidate(cronExpression, dayOfWeek, strictValidate);
     return (
       <span className={`schedule-period ${typeCx}`}>
         <Select
@@ -570,4 +579,4 @@ export default class OneCron extends React.Component<
 }
 
 // 提供cron Expression验证方法
-export { cronValidate, getPredictedTimes };
+export { cronValidate, getPredictedTimes, DayOfWeekType };
