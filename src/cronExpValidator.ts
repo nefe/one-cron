@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import { DayOfWeekType } from './cronUtils';
+import { DayOfWeekType } from './define';
 import { getArr } from './I18N';
 /**
  * Validates a cron expression.
