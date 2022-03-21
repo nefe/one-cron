@@ -1,5 +1,6 @@
 import * as _ from "lodash";
-
+import { DayOfWeekType } from './cronUtils';
+import { getArr } from './I18N';
 /**
  * Validates a cron expression.
  *
@@ -7,7 +8,7 @@ import * as _ from "lodash";
  * @param strictValidate 是否严格校验cron expression
  * @return True is expression is valid
  */
-export function cronValidate(cronExpression: string, dayOfWeekOneBased = true, strictValidate = true) {
+export function cronValidate(cronExpression: string, dayOfWeek = DayOfWeekType.Quartz, strictValidate = true) {
   var cronParams = cronExpression ? cronExpression.split(" ") : "";
 
   if (cronParams.length < 6 || cronParams.length > 7) {
@@ -41,7 +42,7 @@ export function cronValidate(cronExpression: string, dayOfWeekOneBased = true, s
     }
 
     //Check day-of-week param
-    if (!checkDayOfWeekField(cronParams[5], dayOfWeekOneBased, strictValidate)) {
+    if (!checkDayOfWeekField(cronParams[5], dayOfWeek, strictValidate)) {
       return false;
     }
 
@@ -167,9 +168,28 @@ function checkMonthsField(monthsField: string) {
 
 const DAYS_OF_WEEK = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
-function checkDayOfWeekField(dayOfWeekField: string, dayOfWeekOneBased = true, strictValidate = true) {
-  _.forEach(DAYS_OF_WEEK, (text: string, index: number) => {
-    const value = dayOfWeekOneBased ? index + 1 : index;
+const DaysOfWeekMap = {
+  // 周日到周六对应 0-6 
+  [DayOfWeekType.Linux]: {
+    days: [...DAYS_OF_WEEK],
+    values: getArr(7, 0),
+  },
+  // 周一到周日对应 1-7
+  [DayOfWeekType.Spring]: {
+    days: [...DAYS_OF_WEEK.slice(1), DAYS_OF_WEEK[0]],
+    values: getArr(7, 1),
+  },
+  // 周日到周六对应 1-7
+  [DayOfWeekType.Quartz]: {
+    days: [...DAYS_OF_WEEK],
+    values: getArr(7, 1),
+  }
+}
+
+function checkDayOfWeekField(dayOfWeekField: string, dayOfWeek = DayOfWeekType.Quartz, strictValidate = true) {
+  const{ days, values } = DaysOfWeekMap[dayOfWeek];
+  _.forEach(days, (text: string, index: number) => {
+    const value = values[index];
     dayOfWeekField = dayOfWeekField.replace(text, `${value}`);
   });
 
@@ -177,7 +197,7 @@ function checkDayOfWeekField(dayOfWeekField: string, dayOfWeekOneBased = true, s
     return true;
   }
 
-  const [min, max] = dayOfWeekOneBased ? [1, 7] : [0, 6];
+  const [min, max] = [values[0], _.last(values)];
   if (dayOfWeekField.indexOf("L") >= 0) {
     return checkFieldWithLetter(dayOfWeekField, "L", min, max, -1, -1);
   } else if (dayOfWeekField.indexOf("C") >= 0) {

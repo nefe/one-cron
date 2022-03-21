@@ -7,6 +7,16 @@ export function isStrNum(str: string) {
   return !Number.isNaN(Number(str));
 }
 
+/** 不同语言对于周调度的取值不同 */
+export const enum DayOfWeekType {
+  // 周日到周六对应 0-6 
+  Linux = 'Linux',
+  // 周一到周日对应 1-7
+  Spring = 'Spring',
+  // 周日到周六对应 1-7
+  Quartz = 'Quartz',
+}
+
 /** 新增对外报漏方法： 由表达式获取最近时间 */
 interface typeCornProps {
   /** 表达式 */
@@ -24,11 +34,14 @@ interface typeCornProps {
    * 展示最近生成时间的数量
    */
   recentTimeNum?:number;
+  /** 按哪种语言来处理周调度 */
+  dayOfWeek?: DayOfWeekType;
 }
 
 export function getPredictedTimes (props: typeCornProps): string[] {
-  const { corn, dayOfWeekOneBased = true,  strictValidate = true, recentTimeNum = 5, delay = 1}  = props;
-  const cron = Cron.getCronFromExp(corn, dayOfWeekOneBased, strictValidate);
+  const { corn, dayOfWeekOneBased = true,  strictValidate = true, recentTimeNum = 5, delay = 1, dayOfWeek = DayOfWeekType.Quartz}  = props;
+  const dayOfWeekType = dayOfWeekOneBased === false ? DayOfWeekType.Linux : dayOfWeek;
+  const cron = Cron.getCronFromExp(corn, dayOfWeekType, strictValidate);
   cron.delay = delay;
   return cron.getPredictedTimes(recentTimeNum);
 }
@@ -40,6 +53,7 @@ export enum PeriodType {
   hour = "hour",
   minute = "minute"
 }
+
 // 默认时间格式化形式
 export const DEFAULT_FORMAT = "YYYY-MM-DD HH:mm:ss";
 
@@ -73,13 +87,21 @@ export const getDayItems = (lang: LangEnum) => {
   });
 };
 
-export const getWeekItems = (lang: LangEnum, dayOfWeekOneBased: boolean = true) => {
+export const getWeekItems = (lang: LangEnum, dayOfWeek = DayOfWeekType.Quartz) => {
   const I18N = getI18N(lang);
   const weekItemsList = I18N["weekItemsList"];
-  return weekItemsList.map((day, dayIndex) => {
+  if (dayOfWeek !== DayOfWeekType.Spring) {
+    return weekItemsList.map((day, dayIndex) => {
+      return {
+        text: day,
+        value: dayIndex + (dayOfWeek === DayOfWeekType.Quartz ? 1 : 0) + "",
+      };
+    });
+  }
+  return [...weekItemsList.slice(1), weekItemsList[0]].map((day, dayIndex) => {
     return {
       text: day,
-      value: dayIndex + (dayOfWeekOneBased ? 1 : 0) + "",
+      value: `${dayIndex + 1}`,
     };
   });
 };
@@ -153,11 +175,11 @@ export class Cron implements CronInterface{
     });
   }
 
-  static getCronFromPeriodType(periodType: PeriodType, dayOfWeekOneBased: boolean = true) {
+  static getCronFromPeriodType(periodType: PeriodType, dayOfWeek = DayOfWeekType.Quartz) {
     if (periodType === PeriodType.day) {
       return new DayCron({});
     } else if (periodType === PeriodType.week) {
-      return new WeekCron({ dayOfWeekOneBased });
+      return new WeekCron({ dayOfWeek });
     } else if (periodType === PeriodType.month) {
       return new MonthCron({});
     } else if (periodType === PeriodType.hour) {
@@ -169,12 +191,12 @@ export class Cron implements CronInterface{
     }
   }
 
-  static getCronFromExp(cronExp: string, dayOfWeekOneBased = true, strictValidate = true) {
+  static getCronFromExp(cronExp: string, dayOfWeek = DayOfWeekType.Quartz, strictValidate = true) {
     if (!cronExp) {
       return new DayCron({});
     }
     // 验证cronExp正确性
-    if (!cronValidate(cronExp, dayOfWeekOneBased, strictValidate)) {
+    if (!cronValidate(cronExp, dayOfWeek, strictValidate)) {
       return new DayCron({});
     }
 
@@ -195,7 +217,7 @@ export class Cron implements CronInterface{
       return new WeekCron({
         time: Moment(`${hour}:${minute}`, "HH:mm"),
         weeks: week.split(","),
-        dayOfWeekOneBased
+        dayOfWeek
       });
     } else if (day !== "*" && isStrNum(hour)) {
       // 每月多少号
@@ -384,8 +406,8 @@ class WeekCron extends Cron {
   weeks = [] as string[];
   time = Moment("00:00", "HH:mm");
   // day of week是否从1开始。如果为true时，周日至周六对应1~7；否则从0开始，周日至周六对应0~6
-  dayOfWeekOneBased = true;
-
+  // dayOfWeekOneBased = true;
+  dayOfWeek = DayOfWeekType.Quartz;
   format() {
     const { weeks, time } = this;
     if(Moment(time).isValid() && weeks){
@@ -398,10 +420,15 @@ class WeekCron extends Cron {
   }
 
   generatePredictedTime(times = 5, format = DEFAULT_FORMAT): string[] {
-    const { weeks, time, dayOfWeekOneBased, delay } = this;
+    const { weeks, time, dayOfWeek, delay } = this;
     const now = Moment();
-    const curretWeek = +now.format("E") === 7 ? 0 : +now.format("E");
-    
+    // Moment 中周一到周日对应 1-7，相当于是 DayOfWeekType.Spring 的对应关系
+    let curretWeek = +now.format("E");
+    if (dayOfWeek === DayOfWeekType.Quartz) {
+      curretWeek = curretWeek === 7 ? 1 : curretWeek + 1;
+    } else if (dayOfWeek === DayOfWeekType.Linux) {
+      curretWeek = curretWeek === 7 ? 0 : curretWeek;
+    }
     // 找到若插入sortedDays中的索引
     const sortedIndex = _.sortedIndex(weeks, +curretWeek);
     const predictedTimes = [
@@ -411,19 +438,10 @@ class WeekCron extends Cron {
       .slice(0, times)
       .map(dayStr => {
         const day = Number(dayStr);
-        let diff: number;
-
-        if (dayOfWeekOneBased) {
-          // day为1时表示为周日
-          diff = day === 1 ? 7 - curretWeek : day - curretWeek - 1;
-        } else {
-          // day为0时表示周日
-          diff = day - curretWeek;
+        let diff = day - curretWeek;
           if (diff < 0) {
             diff = diff + 7;
           }
-        }
-
         if (diff === 0) {
           const isBefore = Moment().isBefore(time);
           const delayStep = delay >= 1 ? delay : (isBefore ? 0 : 1);
