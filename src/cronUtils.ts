@@ -13,24 +13,24 @@ interface typeCornProps {
   /** 表达式 */
   corn: string;
   /** T+n */
-  delay?:number;
+  delay?: number;
   /** day of week是否从1开始。如果为true时，周日至周六对应1~7；否则从0开始，周日至周六对应0~6 */
-  dayOfWeekOneBased?:boolean;
+  dayOfWeekOneBased?: boolean;
   /**
    * 是否严格校验cron表达式。如果为true，cron表达式的day of week字段必须是严格递增的, 
    * 例如day of week是'5,6'，则是合法的。但如果是'6,5'，则校验不通过
    */
-  strictValidate?:boolean;
+  strictValidate?: boolean;
   /**
    * 展示最近生成时间的数量
    */
-  recentTimeNum?:number;
+  recentTimeNum?: number;
   /** 按哪种语言来处理周调度 */
   dayOfWeek?: DayOfWeekType;
 }
 
-export function getPredictedTimes (props: typeCornProps): string[] {
-  const { corn, dayOfWeekOneBased = true,  strictValidate = true, recentTimeNum = 5, delay = 1, dayOfWeek = DayOfWeekType.Quartz}  = props;
+export function getPredictedTimes(props: typeCornProps): string[] {
+  const { corn, dayOfWeekOneBased = true, strictValidate = true, recentTimeNum = 5, delay = 1, dayOfWeek = DayOfWeekType.Quartz } = props;
   const dayOfWeekType = dayOfWeekOneBased === false ? DayOfWeekType.Linux : dayOfWeek;
   const cron = Cron.getCronFromExp(corn, dayOfWeekType, strictValidate);
   cron.delay = delay;
@@ -145,7 +145,7 @@ interface CronInterface {
   resetStartAndEndTime(): timeMoment
 }
 
-export class Cron implements CronInterface{
+export class Cron implements CronInterface {
   periodType: PeriodType;
 
   /**
@@ -277,14 +277,14 @@ export class DayCron extends Cron {
         `${Moment(time)
           .add(index + step, "days")
           .format(format)}`
-    ): [];
+    ) : [];
 
     return predictedTimes;
   }
 
   format() {
     const time = this.time;
-    if(!Moment(time).isValid()) {
+    if (!Moment(time).isValid()) {
       return;
     }
     return `0 ${time.minutes()} ${time.hours()} * * ?`;
@@ -304,11 +304,10 @@ class MonthCron extends Cron {
 
   format() {
     const { days, time } = this;
-    if(Moment(time).isValid() && days){
-      return `0 ${time.minutes()} ${time.hours()} ${
-        days.length > 0 ? days.join(",") : "*"
-      } * ?`;
-    }else {
+    if (Moment(time).isValid() && days) {
+      return `0 ${time.minutes()} ${time.hours()} ${days.length > 0 ? days.join(",") : "*"
+        } * ?`;
+    } else {
       return;
     }
   }
@@ -318,13 +317,13 @@ class MonthCron extends Cron {
    * 譬如 monthWithYear = Moment('2022-02'), day = '29', 返回 '2022-03-29';
    */
   getValidNextDateWithMonth(monthWithYear: Moment.Moment, day: string, format = DEFAULT_FORMAT) {
-    const [year, month] =  Moment(monthWithYear).format("YYYY-MM").split('-');
+    const [year, month] = Moment(monthWithYear).format("YYYY-MM").split('-');
     const dayInNextMonth = Moment(`${year}-${month}-${day}`);
     if (dayInNextMonth.isValid()) {
-     return dayInNextMonth.format(format);
+      return dayInNextMonth.format(format);
     }
     // 12月有31天，该月所有日期是有效的，因此这里可以直接 month + 1 
-    return  Moment(`${year}-${+month + 1}-${day}`).format(format);
+    return Moment(`${year}-${+month + 1}-${day}`).format(format);
   }
 
   // 计算预测时间
@@ -333,7 +332,7 @@ class MonthCron extends Cron {
     const sortedDays = days.sort((a, b) => +a - +b);
     const now = Moment().add(delay >= 1 ? delay : 0, 'd');
     const currentDay = +Moment().format("DD");
-    const sortedIndex = _.sortedIndex(sortedDays, currentDay);
+    const sortedIndex = _.sortedIndex(sortedDays, String(currentDay));
     const predictedTimes = [
       ..._.sortedUniq(sortedDays.slice(sortedIndex)),
       ..._.sortedUniq(sortedDays.slice(0, sortedIndex))
@@ -372,8 +371,8 @@ class MonthCron extends Cron {
           list.forEach(predictedTime => {
             const day = Moment(predictedTime).format("DD");
             let time = this.getValidNextDateWithMonth(Moment(predictedTime).add(index + 1, "months"), day);
-            while(predictedTimes.includes(time)) {
-              time =  this.getValidNextDateWithMonth(Moment(time).add(1, "months"), day);
+            while (predictedTimes.includes(time)) {
+              time = this.getValidNextDateWithMonth(Moment(time).add(1, "months"), day);
             }
             predictedTimes.push(time);
           });
@@ -401,11 +400,10 @@ class WeekCron extends Cron {
   dayOfWeek = DayOfWeekType.Quartz;
   format() {
     const { weeks, time } = this;
-    if(Moment(time).isValid() && weeks){
-      return `0 ${time.minutes()} ${time.hours()} ? * ${
-        weeks.length > 0 ? weeks.join(",") : "*"
-      }`;
-    }else {
+    if (Moment(time).isValid() && weeks) {
+      return `0 ${time.minutes()} ${time.hours()} ? * ${weeks.length > 0 ? weeks.join(",") : "*"
+        }`;
+    } else {
       return;
     }
   }
@@ -421,7 +419,7 @@ class WeekCron extends Cron {
       curretWeek = curretWeek === 7 ? 0 : curretWeek;
     }
     // 找到若插入sortedDays中的索引
-    const sortedIndex = _.sortedIndex(weeks, +curretWeek);
+    const sortedIndex = _.sortedIndex(weeks, String(curretWeek));
     const predictedTimes = [
       ..._.sortedUniq(weeks.slice(sortedIndex)),
       ..._.sortedUniq(weeks.slice(0, sortedIndex))
@@ -430,9 +428,9 @@ class WeekCron extends Cron {
       .map(dayStr => {
         const day = Number(dayStr);
         let diff = day - curretWeek;
-          if (diff < 0) {
-            diff = diff + 7;
-          }
+        if (diff < 0) {
+          diff = diff + 7;
+        }
         if (diff === 0) {
           const isBefore = Moment().isBefore(time);
           const delayStep = delay >= 1 ? delay : (isBefore ? 0 : 1);
@@ -491,23 +489,23 @@ export class HourCron extends Cron {
 
   /** 是否使用时间段 */
   hasInterval = false;
-  hours? = [] as string[];
-  beginTime? = Moment("00:00", "HH:mm");
+  hours?= [] as string[];
+  beginTime?= Moment("00:00", "HH:mm");
   // endTime minutes only 59
-  endTime? = Moment("23:59", "HH:mm");
-  stepHour? = "1";
+  endTime?= Moment("23:59", "HH:mm");
+  stepHour?= "1";
 
   format() {
     const { hasInterval, beginTime, endTime, hours, stepHour } = this;
     const isValid = Moment(beginTime).isValid() && Moment(endTime).isValid();
 
-    if(isValid) {
+    if (isValid) {
       if (hasInterval) {
         return `0 ${beginTime.minutes()} ${beginTime.hours()}-${endTime.hours()}/${stepHour} * * ?`;
       } else {
         return `0 0 ${hours.length > 0 ? hours.join(",") : "*"} * * ?`;
       }
-    }else {
+    } else {
       return;
     }
   }
@@ -569,8 +567,8 @@ export class HourCron extends Cron {
     // 判断开始/结束时间是否有效
     const isValid = Moment(beginTime).isValid() && Moment(endTime).isValid();
     if (hasInterval) {
-      if(isValid) {
-        const {start, end} = this.resetStartAndEndTime();
+      if (isValid) {
+        const { start, end } = this.resetStartAndEndTime();
         const minDiff = getMins(end) - getMins(start);
         if (minDiff <= +stepHour * 60) {
           predictedTimes = [Moment(start).format(format)];
@@ -603,9 +601,9 @@ export class HourCron extends Cron {
 class MinuteCron extends Cron {
   readonly periodType = PeriodType.minute;
 
-  beginTime? = Moment("00:00", "HH:mm");
-  endTime? = Moment("23:59", "HH:mm");
-  stepMinute? = "05";
+  beginTime?= Moment("00:00", "HH:mm");
+  endTime?= Moment("23:59", "HH:mm");
+  stepMinute?= "05";
 
   /** 修正开始和结束时间 */
   resetStartAndEndTime(): {
@@ -648,7 +646,7 @@ class MinuteCron extends Cron {
     let predictedTimes = [];
     const isValid = Moment(beginTime).isValid() && Moment(endTime).isValid();
     if (isValid) {
-      const {start,end} = this.resetStartAndEndTime();
+      const { start, end } = this.resetStartAndEndTime();
       const timeDiff = getMins(end) - getMins(start);
       if (timeDiff <= +stepMinute) {
         // 判断开始结束时间是否大于间隔时间，否则返回开始时间
@@ -658,21 +656,21 @@ class MinuteCron extends Cron {
         const count = Math.ceil(timeDiff / +stepMinute);
         //  30/30 是从30分开始每隔30分执行一次, 超过60分钟，则跳过
         //  0/30 是从0分钟开始每隔30分钟执行一次, 所以就是每个小时的0分, 30分执行
-        const total = Number(start.minutes())+ Number(stepMinute)
+        const total = Number(start.minutes()) + Number(stepMinute)
         const step = total >= 60 ? 60 : stepMinute
         predictedTimes = getArr(count)
-        .map((item, index) => {
-           // 计算60分钟内的循环次数
-           const iter = Math.ceil(60 / Number(step));
-           // 新增小时
-           const hour = item < iter ?0:Math.floor(item / iter);
-           
-           const addTime = Number(step) * (index % iter) + 60 * hour;
+          .map((item, index) => {
+            // 计算60分钟内的循环次数
+            const iter = Math.ceil(60 / Number(step));
+            // 新增小时
+            const hour = item < iter ? 0 : Math.floor(item / iter);
 
-          return `${Moment(start)
-            .add(addTime, "minutes")
-            .format(format)}`;
-        }).filter(Boolean).slice(0, times);
+            const addTime = Number(step) * (index % iter) + 60 * hour;
+
+            return `${Moment(start)
+              .add(addTime, "minutes")
+              .format(format)}`;
+          }).filter(Boolean).slice(0, times);
       }
     }
 
@@ -683,9 +681,9 @@ class MinuteCron extends Cron {
     const { beginTime, endTime, stepMinute } = this;
 
     const isValid = Moment(beginTime).isValid() && Moment(endTime).isValid();
-    if(isValid) {
+    if (isValid) {
       return `0 ${beginTime.minutes()}/${stepMinute} ${beginTime.hours()}-${endTime.hours()} * * ?`;
-    }else {
+    } else {
       return;
     }
   }

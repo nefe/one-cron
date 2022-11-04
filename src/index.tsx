@@ -1,8 +1,8 @@
 import * as React from "react";
-import { Select, Checkbox, TimePicker, Radio } from "antd";
+import { Select, Checkbox, TimePicker } from "antd";
 import * as Moment from "moment";
 import { getArr } from "./I18N";
-import './index.css';
+import "./index.css";
 
 import {
   Cron,
@@ -19,9 +19,11 @@ import {
 } from "./cronUtils";
 import { cronValidate } from "./cronExpValidator";
 import { getI18N, LangEnum } from "./I18N";
-import { DayOfWeekType } from './define';
+import { DayOfWeekType } from "./define";
+import { RangeType } from "rc-picker/lib/RangePicker";
+import { RangeValue } from "rc-picker/lib/interface";
 const Option = Select.Option;
-const RadioGroup = Radio.Group;
+const RangePicker = TimePicker.RangePicker;
 
 interface Item {
   text: string;
@@ -30,7 +32,7 @@ interface Item {
 type disabledtype = "start" | "end";
 
 function getOptions(items: Item[]) {
-  return items.map(item => {
+  return items.map((item) => {
     return (
       <Option key={item.value} value={item.value}>
         {item.text}
@@ -61,11 +63,11 @@ export class OneCronProps {
   /** 是否支持多选 */
   multiple? = true;
   /** 错误信息 */
-  errorMessage? = '';
+  errorMessage? = "";
   /** day of week是否从1开始。如果为true时，周日至周六对应1~7；否则从0开始，周日至周六对应0~6 */
   dayOfWeekOneBased? = true;
   /**
-   * 是否严格校验cron表达式。如果为true，cron表达式的day of week字段必须是严格递增的, 
+   * 是否严格校验cron表达式。如果为true，cron表达式的day of week字段必须是严格递增的,
    * 例如day of week是'5,6'，则是合法的。但如果是'6,5'，则校验不通过
    */
   strictValidate? = true;
@@ -82,7 +84,6 @@ interface OneCronState {
   cron: AllCron;
   cronType: PeriodType;
   isEmpty: boolean;
-  endOpen: boolean;
   timeList: string[];
   isError: boolean;
 }
@@ -95,46 +96,60 @@ export default class OneCron extends React.Component<
   constructor(props: OneCronProps) {
     super(props);
     // 兼容历史 dayOfWeekOneBased 字段配置
-    const dayOfWeek = props.dayOfWeekOneBased === false ? DayOfWeekType.Linux : props.dayOfWeek;
-    const cron = Cron.getCronFromExp(props.cronExpression, dayOfWeek, props.strictValidate);
+    const dayOfWeek =
+      props.dayOfWeekOneBased === false ? DayOfWeekType.Linux : props.dayOfWeek;
+    const cron = Cron.getCronFromExp(
+      props.cronExpression,
+      dayOfWeek,
+      props.strictValidate
+    );
     cron.delay = this.props.delay;
 
     this.state = {
       cron,
       cronType: cron.periodType,
       isEmpty: !props.cronExpression,
-      endOpen: false,
       timeList: cron.getPredictedTimes(props.recentTimeNum),
-      isError: false
+      isError: false,
     };
   }
 
   componentWillReceiveProps(nextProps: OneCronProps) {
     if (nextProps.cronExpression !== this.props.cronExpression) {
       if (this.state.isEmpty) {
-        const dayOfWeek = nextProps.dayOfWeekOneBased === false ? DayOfWeekType.Linux : nextProps.dayOfWeek;
-        const newCron = Cron.getCronFromExp(nextProps.cronExpression, dayOfWeek, nextProps.strictValidate);
+        const dayOfWeek =
+          nextProps.dayOfWeekOneBased === false
+            ? DayOfWeekType.Linux
+            : nextProps.dayOfWeek;
+        const newCron = Cron.getCronFromExp(
+          nextProps.cronExpression,
+          dayOfWeek,
+          nextProps.strictValidate
+        );
         newCron.delay = this.props.delay;
-        const cronType =  newCron.periodType;
+        const cronType = newCron.periodType;
         this.setState({
           cron: newCron,
           cronType,
           isEmpty: false,
-          timeList: newCron.getPredictedTimes(nextProps.recentTimeNum)
+          timeList: newCron.getPredictedTimes(nextProps.recentTimeNum),
         });
       }
     }
   }
 
   handleChangePeriodType(periodType: PeriodType) {
-    const dayOfWeek = this.props.dayOfWeekOneBased === false ? DayOfWeekType.Linux : this.props.dayOfWeek;
+    const dayOfWeek =
+      this.props.dayOfWeekOneBased === false
+        ? DayOfWeekType.Linux
+        : this.props.dayOfWeek;
     const newCron = Cron.getCronFromPeriodType(periodType, dayOfWeek);
     newCron.delay = this.props.delay;
     this.setState(
       {
         cron: newCron,
         cronType: periodType,
-        timeList: newCron.getPredictedTimes(this.props.recentTimeNum)
+        timeList: newCron.getPredictedTimes(this.props.recentTimeNum),
       },
       () => {
         this.triggerValidate(newCron);
@@ -143,44 +158,50 @@ export default class OneCron extends React.Component<
     );
   }
 
-  onValidate(isError:boolean){
+  onValidate(isError: boolean) {
     this.setState({
-      isError
+      isError,
     });
     this.props.onValidate && this.props.onValidate(isError, this.state.cron);
   }
 
   // 校验某些选择项是否有填，当前只对week,month,hour类型进行判断
-  triggerValidate(cron){
+  triggerValidate(cron) {
     const { twoHourItemsRequired } = this.props;
 
-    if(cron.periodType === 'week') {
-      if(cron.weeks.length === 0){
-        this.onValidate(true)
-      }else {
-        this.onValidate(false)
-      }
-    }else if(cron.periodType === 'month'){
-      if(cron.days.length === 0){
+    if (cron.periodType === "week") {
+      if (cron.weeks.length === 0) {
         this.onValidate(true);
-      }else {
-        this.onValidate(false)
+      } else {
+        this.onValidate(false);
       }
-    } else if (cron.periodType === 'hour') {
-      if (cron.hasInterval === false && (cron.hours.length === 0 || (twoHourItemsRequired && cron.hours.length === 1))) {
+    } else if (cron.periodType === "month") {
+      if (cron.days.length === 0) {
         this.onValidate(true);
-      }else {
-        this.onValidate(false)
+      } else {
+        this.onValidate(false);
+      }
+    } else if (cron.periodType === "hour") {
+      if (
+        cron.hasInterval === false &&
+        (cron.hours.length === 0 ||
+          (twoHourItemsRequired && cron.hours.length === 1))
+      ) {
+        this.onValidate(true);
+      } else {
+        this.onValidate(false);
       }
     } else {
-      this.onValidate(false)
+      this.onValidate(false);
     }
   }
 
   triggerChange() {
-    const timeList = this.state.cron.getPredictedTimes(this.props.recentTimeNum);
+    const timeList = this.state.cron.getPredictedTimes(
+      this.props.recentTimeNum
+    );
     this.setState({
-      timeList
+      timeList,
     });
     this.props.onChange(this.state.cron);
     this.triggerValidate(this.state.cron);
@@ -191,34 +212,25 @@ export default class OneCron extends React.Component<
     sTime: number,
     eTime: number,
     type: disabledtype = "end"
-  ) => {
+  ): Array<number> => {
     const { beginTime, endTime } = this.props;
     if (type === "end") {
       const newTime = Math.min(eTime, endTime);
       return [
         ...getArr(beginTime, 0),
-        ...getArr(24 - newTime, newTime === 0 ? 1 : newTime)
+        ...getArr(24 - newTime, newTime === 0 ? 1 : newTime),
       ];
     } else {
       const newtime = Math.max(sTime, beginTime);
       return [
         ...getArr(newtime + 1, 0),
-        ...getArr(24 - endTime, endTime === 0 ? 1 : endTime)
+        ...getArr(24 - endTime, endTime === 0 ? 1 : endTime),
       ];
     }
   };
-  handleStartOpenChange = (open: boolean) => {
-    if (!open) {
-      this.setState({ endOpen: true });
-    }
-  };
-
-  handleEndOpenChange = (open: boolean) => {
-    this.setState({ endOpen: open });
-  };
 
   renderDetail() {
-    const { cron, endOpen } = this.state;
+    const { cron } = this.state;
     const {
       lang,
       showCheckbox,
@@ -228,10 +240,11 @@ export default class OneCron extends React.Component<
       multiple,
       dayOfWeekOneBased,
     } = this.props;
-    const dayOfWeek = dayOfWeekOneBased === false ? DayOfWeekType.Linux : this.props.dayOfWeek;
+    const dayOfWeek =
+      dayOfWeekOneBased === false ? DayOfWeekType.Linux : this.props.dayOfWeek;
     const disabledHours = () => [
       ...getArr(beginTime, 0),
-      ...getArr(24 - endTime, endTime === 0 ? 1 : endTime)
+      ...getArr(24 - endTime, endTime === 0 ? 1 : endTime),
     ];
     const I18N = getI18N(lang);
     const getCommonProps = <T extends any, Key extends keyof T>(
@@ -241,41 +254,53 @@ export default class OneCron extends React.Component<
     ) => {
       // 数据订正
       const isValid = Moment(cronBO[key]).isValid();
-      if(isValid) {
+      if (isValid) {
         if (cronType === PeriodType.minute) {
           if (key === "endTime") {
-            cronBO[key] = isValid ? Moment(cronBO[key], "HH:mm") as any : null;
+            cronBO[key] = isValid
+              ? (Moment(cronBO[key], "HH:mm") as any)
+              : null;
           } else if (key === "beginTime") {
-            cronBO[key] = isValid ? Moment(cronBO[key], "HH:mm") as any : null;
+            cronBO[key] = isValid
+              ? (Moment(cronBO[key], "HH:mm") as any)
+              : null;
           }
         } else if (cronType === PeriodType.hour) {
           if (key === "endTime") {
-            cronBO[key] = isValid?Moment(cronBO[key], "HH:mm").minute(59) as any :null;
-          } 
+            cronBO[key] = isValid
+              ? (Moment(cronBO[key], "HH:mm").minute(59) as any)
+              : null;
+          }
         }
       }
 
       return {
         value: cronBO[key],
-        onChange: value => {
+        onChange: (value) => {
           cronBO[key] = value;
           // 数据订正
           const isValid = Moment(cronBO[key]).isValid();
-          if(isValid) {
+          if (isValid) {
             if (cronType === PeriodType.minute) {
               if (key === "endTime") {
-                cronBO[key] = isValid ? Moment(cronBO[key], "HH:mm") as any : null;
+                cronBO[key] = isValid
+                  ? (Moment(cronBO[key], "HH:mm") as any)
+                  : null;
               } else if (key === "beginTime") {
-                cronBO[key] = isValid ? Moment(cronBO[key], "HH:mm") as any : null;
+                cronBO[key] = isValid
+                  ? (Moment(cronBO[key], "HH:mm") as any)
+                  : null;
               }
             } else if (cronType === PeriodType.hour) {
               if (key === "endTime") {
-                cronBO[key] = isValid ? Moment(cronBO[key], "HH:mm").minute(59) as any :null;
-              } 
+                cronBO[key] = isValid
+                  ? (Moment(cronBO[key], "HH:mm").minute(59) as any)
+                  : null;
+              }
             }
           }
           this.triggerChange();
-        }
+        },
       };
     };
 
@@ -291,8 +316,8 @@ export default class OneCron extends React.Component<
 
         return (
           <TimePicker
-            disabledHours={disabledHours}
-            format='HH:mm'
+            disabledTime={() => ({ disabledHours })}
+            format="HH:mm"
             {...getCommonProps(cron, "time")}
             disabled={disabled}
           />
@@ -304,26 +329,34 @@ export default class OneCron extends React.Component<
           <span>
             <span className="cron-select-wrapper">
               <Select
-                className={this.state.isError ? "cron-select-error" :"cron-select"}
+                className={
+                  this.state.isError ? "cron-select-error" : "cron-select"
+                }
                 disabled={disabled}
-                mode={multiple ? 'tags' : 'default'}
-                style={{ width: 200, borde: '1px solid red' }}
+                mode={multiple ? "tags" : undefined}
+                style={{ width: 200, border: "1px solid red" }}
                 {...getCommonProps(cron, "weeks")}
                 onChange={(value: string[]) => {
-                  const weeks = multiple ? value.sort((a, b) => +a - +b) : [].concat(value);
-                  cron.weeks = weeks
+                  const weeks = multiple
+                    ? value.sort((a, b) => +a - +b)
+                    : [].concat(value);
+                  cron.weeks = weeks;
                   this.triggerChange();
                 }}
-                value={cron.weeks.filter(item => item !== '*')}
+                value={cron.weeks.filter((item) => item !== "*")}
               >
                 {getOptions(getWeekItems(lang, dayOfWeek))}
               </Select>
-              {this.state.isError && this.props.errorMessage && <div className="cron-select-errorMessage">{this.props.errorMessage}</div>}
-            </span> 
-            
+              {this.state.isError && this.props.errorMessage && (
+                <div className="cron-select-errorMessage">
+                  {this.props.errorMessage}
+                </div>
+              )}
+            </span>
+
             <TimePicker
-              disabledHours={disabledHours}
-              format='HH:mm'
+              disabledTime={() => ({ disabledHours })}
+              format="HH:mm"
               {...getCommonProps(cron, "time")}
             />
           </span>
@@ -335,25 +368,33 @@ export default class OneCron extends React.Component<
           <span>
             <span className="cron-select-wrapper">
               <Select
-                className={this.state.isError ? "cron-select-error" :"cron-select"}
+                className={
+                  this.state.isError ? "cron-select-error" : "cron-select"
+                }
                 disabled={disabled}
-                mode={multiple ? 'tags' : 'default'}
+                mode={multiple ? "tags" : undefined}
                 style={{ width: 200 }}
                 {...getCommonProps(cron, "days")}
                 onChange={(value: string[]) => {
-                  const days = multiple ? value.sort((a, b) => +a - +b) : [].concat(value);
-                  cron.days = days
+                  const days = multiple
+                    ? value.sort((a, b) => +a - +b)
+                    : [].concat(value);
+                  cron.days = days;
                   this.triggerChange();
                 }}
                 value={cron.days}
               >
                 {getOptions(getDayItems(lang))}
               </Select>
-              {this.state.isError && this.props.errorMessage && <div className="cron-select-errorMessage">{this.props.errorMessage}</div>}
+              {this.state.isError && this.props.errorMessage && (
+                <div className="cron-select-errorMessage">
+                  {this.props.errorMessage}
+                </div>
+              )}
             </span>
             <TimePicker
-              disabledHours={disabledHours}
-              format='HH:mm'
+              disabledTime={() => ({ disabledHours })}
+              format="HH:mm"
               {...getCommonProps(cron, "time")}
             />
           </span>
@@ -361,32 +402,50 @@ export default class OneCron extends React.Component<
       }
 
       case PeriodType.minute: {
-        const startTime = +Moment(
-          getCommonProps(cron, "beginTime").value
-        ).format("HH");
-        const endTime = +Moment(getCommonProps(cron, "endTime").value).format(
-          "HH"
+        const beginTimeProp = getCommonProps(
+          cron,
+          "beginTime",
+          PeriodType.minute
         );
+        const endTimeProp = getCommonProps(cron, "endTime", PeriodType.minute);
+
+        const startTime = +Moment(beginTimeProp.value).format("HH");
+        const endTime = +Moment(endTimeProp.value).format("HH");
+        const rangePickerValue: RangeValue<Moment.Moment> = [
+          beginTimeProp.value,
+          endTimeProp.value,
+        ];
+        const rangePickerOnchange = (value) => {
+          if (value?.length === 2) {
+            const [beginValue, endValue] = value;
+            beginTimeProp.onChange(beginValue);
+            endTimeProp.onChange(endValue);
+          } else {
+            beginTimeProp.onChange(null);
+            endTimeProp.onChange(null);
+          }
+        };
+
         return (
           <span>
-            <span className='form-item'>
-              <span className='form-item-title'>{I18N.start}</span>
-              <TimePicker
+            <span className="form-item">
+              <RangePicker
                 disabled={disabled}
-                disabledHours={this.disabledHours.bind(
-                  this,
-                  startTime,
-                  endTime,
-                  "end"
-                )}
-                // disabledMinutes={() => getArr(59, 1)}
-                format='HH:mm'
-                onOpenChange={this.handleStartOpenChange}
-                {...getCommonProps(cron, "beginTime", PeriodType.minute)}
+                format="HH:mm"
+                disabledTime={(date: Moment.Moment, type: RangeType) => ({
+                  disabledHours: () =>
+                    this.disabledHours(
+                      startTime,
+                      endTime,
+                      type === "start" ? "end" : "start"
+                    ),
+                })}
+                value={rangePickerValue}
+                onChange={rangePickerOnchange}
               />
             </span>
-            <span className='form-item'>
-              <span className='form-item-title'>{I18N.step}</span>
+            <span className="form-item">
+              <span className="form-item-title">{I18N.step}</span>
               <Select
                 disabled={disabled}
                 style={{ width: 100 }}
@@ -396,67 +455,69 @@ export default class OneCron extends React.Component<
               </Select>
               <span style={{ marginRight: 20 }}>{I18N.stepMinuteUnit}</span>
             </span>
-            <span className='form-item'>
-              <span className='form-item-title'>{I18N.end}</span>
-              <TimePicker
-                disabled={disabled}
-                format='HH:mm'
-                {...getCommonProps(cron, "endTime", PeriodType.minute)}
-                disabledHours={this.disabledHours.bind(
-                  this,
-                  startTime,
-                  endTime,
-                  "start"
-                )}
-                // disabledMinutes={() => getArr(59, 0)}
-                open={endOpen}
-                onOpenChange={this.handleEndOpenChange}
-              />
-            </span>
           </span>
         );
       }
 
       case PeriodType.hour: {
-        const startTime = +Moment(
-          getCommonProps(cron, "beginTime").value
-        ).format("HH");
-        const endTime = +Moment(getCommonProps(cron, "endTime").value).format(
-          "HH"
-        );
+        const beginTimeProp = getCommonProps(cron, "beginTime");
+        const endTimeProp = getCommonProps(cron, "endTime");
+
+        const startTime = +Moment(beginTimeProp.value).format("HH");
+        const endTime = +Moment(endTimeProp.value).format("HH");
+
+        const rangePickerValue: RangeValue<Moment.Moment> = [
+          beginTimeProp.value,
+          endTimeProp.value,
+        ];
+        const rangePickerOnchange = (value) => {
+          if (value?.length === 2) {
+            const [beginValue, endValue] = value;
+            beginTimeProp.onChange(beginValue);
+            endTimeProp.onChange(endValue);
+          } else {
+            beginTimeProp.onChange(null);
+            endTimeProp.onChange(null);
+          }
+        };
 
         return (
           <span>
-            <RadioGroup
+            <Select
               disabled={disabled}
               value={cron.hasInterval ? "step" : "point"}
-              onChange={e => {
-                cron.hasInterval = e.target.value === "step";
+              onChange={(val) => {
+                cron.hasInterval = val === "step";
                 this.triggerChange();
               }}
             >
-              <Radio value='step'>{I18N.period}</Radio>
-              <Radio value='point'>{I18N.point}</Radio>
-            </RadioGroup>
+              <Option key={"step"}>{I18N.period}</Option>
+              <Option key={"point"}>{I18N.point}</Option>
+            </Select>
             {cron.hasInterval ? (
               <span>
-                <span className='form-item'>
-                  <span className='form-item-title'>{I18N.start}</span>
-                  <TimePicker
+                <span className="form-item">
+                  <RangePicker
                     disabled={disabled}
-                    disabledHours={this.disabledHours.bind(
-                      this,
-                      startTime,
-                      endTime,
-                      "end"
-                    )}
-                    onOpenChange={this.handleStartOpenChange}
-                    format='HH:mm'
-                    {...getCommonProps(cron, "beginTime", PeriodType.hour)}
+                    format="HH:mm"
+                    disabledTime={(date: Moment.Moment, type: RangeType) =>
+                      type === "start"
+                        ? {
+                            disabledHours: () =>
+                              this.disabledHours(startTime, endTime, "end"),
+                          }
+                        : {
+                            disabledHours: () =>
+                              this.disabledHours(startTime, endTime, "start"),
+                            disabledMinutes: () => getArr(59, 0),
+                          }
+                    }
+                    value={rangePickerValue}
+                    onChange={rangePickerOnchange}
                   />
                 </span>
-                <span className='form-item'>
-                  <span className='form-item-title'>{I18N.step}</span>
+                <span className="form-item">
+                  <span className="form-item-title">{I18N.step}</span>
                   <Select
                     disabled={disabled}
                     style={{ width: 100 }}
@@ -466,44 +527,33 @@ export default class OneCron extends React.Component<
                   </Select>
                   <span style={{ marginRight: 20 }}>{I18N.stepHourUnit}</span>
                 </span>
-                <span className='form-item'>
-                  <span className='form-item-title'>{I18N.end}</span>
-                  <TimePicker
-                    disabled={disabled}
-                    format='HH:mm'
-                    disabledHours={this.disabledHours.bind(
-                      this,
-                      startTime,
-                      endTime,
-                      "start"
-                    )}
-                    disabledMinutes={() => getArr(59, 0)}
-                    open={endOpen}
-                    onOpenChange={this.handleEndOpenChange}
-                    {...getCommonProps(cron, "endTime", PeriodType.hour)}
-                  />
-                </span>
               </span>
             ) : (
               <span className="cron-select-wrapper">
-
-              <Select
-                className={this.state.isError ? "cron-select-error" :"cron-select"}
-                mode={multiple ? 'tags' : 'default'}
-                disabled={disabled}
-                style={{ width: 200 }}
-                onChange={(value: string[]) => {
-                  const hours = multiple ? value.sort((a, b) => +a - +b) : [].concat(value);
-                  cron.hours = hours
-                  this.triggerChange();
-                 
-                }}
-                value={cron.hours}
-              >
-                {getOptions(getHourItems(lang, beginTime, endTime))}
-              </Select>
-              {this.state.isError && this.props.errorMessage && <div className="cron-select-errorMessage">{this.props.errorMessage}</div>}
-            </span> 
+                <Select
+                  className={
+                    this.state.isError ? "cron-select-error" : "cron-select"
+                  }
+                  mode={multiple ? "tags" : undefined}
+                  disabled={disabled}
+                  style={{ width: 200 }}
+                  onChange={(value: string[]) => {
+                    const hours = multiple
+                      ? value.sort((a, b) => +a - +b)
+                      : [].concat(value);
+                    cron.hours = hours;
+                    this.triggerChange();
+                  }}
+                  value={cron.hours}
+                >
+                  {getOptions(getHourItems(lang, beginTime, endTime))}
+                </Select>
+                {this.state.isError && this.props.errorMessage && (
+                  <div className="cron-select-errorMessage">
+                    {this.props.errorMessage}
+                  </div>
+                )}
+              </span>
             )}
           </span>
         );
@@ -530,7 +580,8 @@ export default class OneCron extends React.Component<
     const I18N = getI18N(lang);
     const { cron } = this.state;
     const typeCx = cron.periodType;
-    const dayOfWeek = dayOfWeekOneBased === false ? DayOfWeekType.Linux : this.props.dayOfWeek;
+    const dayOfWeek =
+      dayOfWeekOneBased === false ? DayOfWeekType.Linux : this.props.dayOfWeek;
     const isValidate = cronValidate(cronExpression, dayOfWeek, strictValidate);
     return (
       <span className={`schedule-period ${typeCx}`}>
@@ -543,7 +594,7 @@ export default class OneCron extends React.Component<
         </Select>
         {!!showCheckbox && (
           <Checkbox
-            onChange={e => {
+            onChange={(e) => {
               (cron as DayCron).changeIsSchedule(e.target.checked);
               this.triggerChange();
             }}
@@ -552,20 +603,20 @@ export default class OneCron extends React.Component<
               cron.periodType !== PeriodType.day ? true : cron.isSchedule
             }
           >
-            <span className='timing'>{I18N.timing}</span>
+            <span className="timing">{I18N.timing}</span>
           </Checkbox>
         )}
         {this.renderDetail()}
         {cronExpression && !isValidate && (
-          <span className='errorCronExp'>{I18N.errorCronExp}</span>
+          <span className="errorCronExp">{I18N.errorCronExp}</span>
         )}
-        <span className='exp'>
-          <span className='exp-title'>{I18N.expTitle}</span>
-          <span className='exp-cron'>{cronExpression}</span>
+        <span className="exp">
+          <span className="exp-title">{I18N.expTitle}</span>
+          <span className="exp-cron">{cronExpression}</span>
         </span>
         {showRecentTime && (
-          <span className='recent'>
-            <span className='recent-title'>{I18N.recentTimes}</span>
+          <span className="recent">
+            <span className="recent-title">{I18N.recentTimes}</span>
             <ul>
               {this.state.timeList.map((time, index) => (
                 <li key={index}>{time}</li>
