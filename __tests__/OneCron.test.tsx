@@ -2,12 +2,13 @@ import * as Enzyme from "enzyme";
 import * as Adapter from "enzyme-adapter-react-16";
 import * as React from "react";
 import OneCron, { cronValidate, DayOfWeekType } from "../src";
+import { LangEnum } from "../src/I18N";
 
 Enzyme.configure({ adapter: new Adapter() });
 
 it("renders the correct language when lang prop is English", () => {
   const cronOne = Enzyme.shallow(
-    <OneCron showCheckbox={true} lang='Chinese' cronExpression='0 0 2 * * ?' />
+    <OneCron showCheckbox={true} lang={LangEnum.zh_CN} cronExpression='0 0 2 * * ?' />
   );
   expect(cronOne.find(".timing").text()).toEqual("定时");
 });
@@ -17,11 +18,11 @@ it("checkbox not show when showCheckbox is false", () => {
   expect(cronOne.find(".ant-checkbox-input").length).toEqual(0);
 });
 
-it("renders the correct text when cronExpression is given", () => {
-  const cronOne = Enzyme.render(
-    <OneCron showCheckbox={true} lang='English' cronExpression='0 0 2 * * ?' />
+it("renders the correct text when cronExpression is given", async() => {
+  const cronOne = Enzyme.mount(
+    <OneCron showCheckbox={true} lang={LangEnum.en_US} cronExpression='0 0 2 * * ?' />
   );
-  expect(cronOne.find(".ant-time-picker-input").prop("value")).toEqual("02:00");
+  expect(cronOne.find("div.ant-picker > div > input").prop("value")).toEqual("02:00");
 });
 
 it("renders the correct text when showRecentTime is true", () => {
@@ -40,7 +41,7 @@ it("dayOfWeekOneBased prop is true by default", () => {
   );
   expect(cronOne.find(".errorCronExp").length).toBe(0);
   // 应该选中周日和周六
-  expect(cronOne.find('.schedule-period.week .cron-select-wrapper .ant-select-selection__choice__content').text()).toBe('SunSat');
+  expect(cronOne.find('.schedule-period.week .cron-select-wrapper .ant-select-selector').text().trim()).toBe('SunSat');
 });
 
 it("dayOfWeekOneBased prop is false", () => {
@@ -50,7 +51,7 @@ it("dayOfWeekOneBased prop is false", () => {
   );
   expect(cronOne.find(".errorCronExp").length).toBe(0);
   // 应该选中周日和周六
-  expect(cronOne.find('.schedule-period.week .cron-select-wrapper .ant-select-selection__choice__content').text()).toBe('SunSat');
+  expect(cronOne.find('.schedule-period.week .cron-select-wrapper .ant-select-selector').text().trim()).toBe('SunSat');
 });
 
 describe('cronValidate', () => {
@@ -98,7 +99,7 @@ describe('twoHourItemsRequired prop', () => {
       <OneCron cronExpression={cronExpression} showRecentTime={true} errorMessage={errorMessage} />
     );
     // 点击时间点的“1时”删除按钮，删除“1时”选项，此时只剩下“2时”选项
-    cronOne.find('.ant-select-selection__choice__remove').first().simulate('click');
+    cronOne.find('.ant-select-selection-item-remove').first().simulate('click');
     // 等待antd Select动画结束
     await new Promise(resolve => {
       setTimeout(() => {
@@ -117,7 +118,7 @@ describe('twoHourItemsRequired prop', () => {
       <OneCron cronExpression={cronExpression} showRecentTime={true} errorMessage={errorMessage} twoHourItemsRequired={true} />
     );
     // 点击时间点的“1时”删除按钮，删除“1时”选项，此时只剩下“2时”选项
-    cronOne.find('.ant-select-selection__choice__remove').first().simulate('click');
+    cronOne.find('.ant-select-selection-item-remove').first().simulate('click');
     // 等待antd Select动画结束
     await new Promise(resolve => {
       setTimeout(() => {
