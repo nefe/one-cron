@@ -1,3 +1,6 @@
+# 0.4.0 / 2022-11-07
+- feat: 时间点、时间段切换由Radio改为Select
+- feat: 日调度和小时调度，时间段的选择由开始结束两个TimePicker改为一个RangePicker
 # 0.3.21 / 2022-03-21
 - fix: 月调度‘最近的生成时间’计算逻辑修正
 - feat: 适配 Java Spring 的周调度定义
