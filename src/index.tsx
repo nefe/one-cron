@@ -334,7 +334,7 @@ export default class OneCron extends React.Component<
                 }
                 disabled={disabled}
                 mode={multiple ? "tags" : undefined}
-                style={{ width: 200, border: "1px solid red" }}
+                style={{ width: 200 }}
                 {...getCommonProps(cron, "weeks")}
                 onChange={(value: string[]) => {
                   const weeks = multiple
