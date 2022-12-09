@@ -333,7 +333,7 @@ export default class OneCron extends React.Component<
                   this.state.isError ? "cron-select-error" : "cron-select"
                 }
                 disabled={disabled}
-                mode={multiple ? "tags" : undefined}
+                mode={multiple ? "multiple" : undefined}
                 style={{ width: 200 }}
                 {...getCommonProps(cron, "weeks")}
                 onChange={(value: string[]) => {
@@ -344,6 +344,7 @@ export default class OneCron extends React.Component<
                   this.triggerChange();
                 }}
                 value={cron.weeks.filter((item) => item !== "*")}
+                optionFilterProp={"children"}
               >
                 {getOptions(getWeekItems(lang, dayOfWeek))}
               </Select>
@@ -372,7 +373,7 @@ export default class OneCron extends React.Component<
                   this.state.isError ? "cron-select-error" : "cron-select"
                 }
                 disabled={disabled}
-                mode={multiple ? "tags" : undefined}
+                mode={multiple ? "multiple" : undefined}
                 style={{ width: 200 }}
                 {...getCommonProps(cron, "days")}
                 onChange={(value: string[]) => {
@@ -383,6 +384,7 @@ export default class OneCron extends React.Component<
                   this.triggerChange();
                 }}
                 value={cron.days}
+                optionFilterProp={"children"}
               >
                 {getOptions(getDayItems(lang))}
               </Select>
@@ -534,7 +536,7 @@ export default class OneCron extends React.Component<
                   className={
                     this.state.isError ? "cron-select-error" : "cron-select"
                   }
-                  mode={multiple ? "tags" : undefined}
+                  mode={multiple ? "multiple" : undefined}
                   disabled={disabled}
                   style={{ width: 200 }}
                   onChange={(value: string[]) => {
@@ -545,6 +547,7 @@ export default class OneCron extends React.Component<
                     this.triggerChange();
                   }}
                   value={cron.hours}
+                  optionFilterProp={"children"}
                 >
                   {getOptions(getHourItems(lang, beginTime, endTime))}
                 </Select>
