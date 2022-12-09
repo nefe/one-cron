@@ -53,6 +53,8 @@ export class OneCronProps {
   delay? = 1;
   showCheckbox? = false;
   disabled? = false;
+  /** 开启起调时间(日、周、月)配置，将会忽略disabled */
+  enableScheduleTime? = false;
   showRecentTime? = false;
   /** 可配置时间粒度 */
   options? = Object.values(PeriodType);
@@ -235,6 +237,7 @@ export default class OneCron extends React.Component<
       lang,
       showCheckbox,
       disabled,
+      enableScheduleTime,
       beginTime = 0,
       endTime = 24,
       multiple,
@@ -319,7 +322,7 @@ export default class OneCron extends React.Component<
             disabledTime={() => ({ disabledHours })}
             format="HH:mm"
             {...getCommonProps(cron, "time")}
-            disabled={disabled}
+            disabled={disabled && !enableScheduleTime}
           />
         );
       }
@@ -359,6 +362,7 @@ export default class OneCron extends React.Component<
               disabledTime={() => ({ disabledHours })}
               format="HH:mm"
               {...getCommonProps(cron, "time")}
+              disabled={disabled && !enableScheduleTime}
             />
           </span>
         );
@@ -398,6 +402,7 @@ export default class OneCron extends React.Component<
               disabledTime={() => ({ disabledHours })}
               format="HH:mm"
               {...getCommonProps(cron, "time")}
+              disabled={disabled && !enableScheduleTime}
             />
           </span>
         );
