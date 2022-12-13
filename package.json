@@ -1,6 +1,6 @@
 {
   "name": "one-cron",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "A Cron Expression Component Based React and Ant Design",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
