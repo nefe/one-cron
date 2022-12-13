@@ -319,6 +319,7 @@ export default class OneCron extends React.Component<
 
         return (
           <TimePicker
+            allowClear={false}
             disabledTime={() => ({ disabledHours })}
             format="HH:mm"
             {...getCommonProps(cron, "time")}
@@ -359,6 +360,7 @@ export default class OneCron extends React.Component<
             </span>
 
             <TimePicker
+              allowClear={false}
               disabledTime={() => ({ disabledHours })}
               format="HH:mm"
               {...getCommonProps(cron, "time")}
@@ -399,6 +401,7 @@ export default class OneCron extends React.Component<
               )}
             </span>
             <TimePicker
+              allowClear={false}
               disabledTime={() => ({ disabledHours })}
               format="HH:mm"
               {...getCommonProps(cron, "time")}
@@ -437,6 +440,7 @@ export default class OneCron extends React.Component<
           <span>
             <span className="form-item">
               <RangePicker
+                allowClear={false}
                 disabled={disabled}
                 format="HH:mm"
                 disabledTime={(date: Moment.Moment, type: RangeType) => ({
@@ -505,6 +509,7 @@ export default class OneCron extends React.Component<
               <span>
                 <span className="form-item">
                   <RangePicker
+                    allowClear={false}
                     disabled={disabled}
                     format="HH:mm"
                     disabledTime={(date: Moment.Moment, type: RangeType) =>
