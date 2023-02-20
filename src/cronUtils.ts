@@ -296,7 +296,7 @@ export class DayCron extends Cron {
   }
 }
 
-class MonthCron extends Cron {
+export class MonthCron extends Cron {
   readonly periodType = PeriodType.month;
 
   days = [] as string[];
@@ -390,7 +390,7 @@ class MonthCron extends Cron {
   }
 }
 
-class WeekCron extends Cron {
+export class WeekCron extends Cron {
   readonly periodType = PeriodType.week;
 
   weeks = [] as string[];
@@ -598,7 +598,7 @@ export class HourCron extends Cron {
   }
 }
 
-class MinuteCron extends Cron {
+export class MinuteCron extends Cron {
   readonly periodType = PeriodType.minute;
 
   beginTime?= Moment("00:00", "HH:mm");
